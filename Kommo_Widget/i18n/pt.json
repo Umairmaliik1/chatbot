@@ -8,6 +8,6 @@
     "settings":{
         "login":"Conecte-se",
         "api_key":"Chave API",
-        "account":"Conta"
+        "subdomain":"Subdomínio"
     }
 }

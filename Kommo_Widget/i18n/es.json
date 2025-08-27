@@ -8,6 +8,6 @@
     "settings":{
         "login":"Inicio de sesión",
         "api_key":"Clave API",
-        "account":"Cuenta"
+        "subdomain":"Subdominio"
     }
 }
