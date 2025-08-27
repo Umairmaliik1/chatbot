@@ -183,6 +183,27 @@ async def rotate_integration_key(
     }
 
 # -------------------------------
+# Test stored credentials
+# -------------------------------
+@router.post("/integration/test")
+async def test_integration(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_user_for_api),
+):
+    integ = db.query(models.KommoIntegration).filter(
+        models.KommoIntegration.user_id == current_user.id
+    ).first()
+    if not integ or not integ.is_active:
+        raise HTTPException(status_code=400, detail="Kommo integration not configured")
+
+    client = KommoClient(current_user.id, db)
+    res = client.test_connection()
+    if not res.get("success"):
+        raise HTTPException(status_code=400, detail="Unable to reach Kommo API")
+
+    return {"status": "ok"}
+
+# -------------------------------
 # Webhook receiver used by Salesbot
 # -------------------------------
 @router.post("/webhook/{integration_key}", name="kommo_webhook")
