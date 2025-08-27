@@ -57,7 +57,7 @@
       "settings": {
         "text": {
           "name": "salesbot.text",
-          "default_value": "https://9dfbf46b7e88.ngrok-free.app/api/kommo/kommo/widget-request",
+          "default_value": "${API_BASE}/api/kommo/kommo/widget-request/{integration_key}",
           "type": "text",
           "manual": true
         }
