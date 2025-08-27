@@ -453,6 +453,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useToast } from '@/composables/useToast'
 import { apiService } from '@/services/api'
+import type { FAQ } from '@/services/instructions'
 import BaseLayout from '@/components/BaseLayout.vue'
 import BaseCard from '@/components/BaseCard.vue'
 import BaseButton from '@/components/BaseButton.vue'
@@ -480,16 +481,16 @@ const instructionFileInput = ref(null)
 const isUploadingInstruction = ref(false)
 
 // FAQs state
-const faqs = ref([])
+const faqs = ref<FAQ[]>([])
 const isLoadingFaqs = ref(false)
 const showFaqModal = ref(false)
-const editingFaq = ref(null)
-const faqForm = ref({
+const editingFaq = ref<FAQ | null>(null)
+const faqForm = ref<FAQ>({
   question: '',
   answer: '',
   priority: 1
 })
-const faqErrors = ref({})
+const faqErrors = ref<Record<string, string>>({})
 const isSavingFaq = ref(false)
 const faqSearchQuery = ref('')
 
@@ -679,7 +680,7 @@ const openFaqModal = () => {
   showFaqModal.value = true
 }
 
-const editFaq = (faq) => {
+const editFaq = (faq: FAQ) => {
   editingFaq.value = faq
   faqForm.value = {
     question: faq.question,
