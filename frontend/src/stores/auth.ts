@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { apiService } from '@/services/api'
-import type { User, LoginCredentials, SignupData, UserProfileUpdate } from '@/types/auth'
+import type { User, LoginCredentials, SignupData, UserProfileUpdate, UserProfile } from '@/types/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -95,11 +95,11 @@ export const useAuthStore = defineStore('auth', () => {
   const updateProfile = async (data: UserProfileUpdate) => {
     isLoading.value = true
     error.value = null
-    
+
     try {
-      const response = await apiService.post('/settings', data)
-      if (user.value) {
-        user.value.profile = { ...(user.value.profile || {}), ...response }
+      const response = await apiService.post<{ message: string; profile: UserProfile }>('/settings', data)
+      if (user.value && response.profile) {
+        user.value.profile = { ...(user.value.profile || {}), ...response.profile }
       }
       return response
     } catch (err: any) {
