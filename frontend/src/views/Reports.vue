@@ -337,6 +337,7 @@ import BaseButton from '@/components/BaseButton.vue'
 import BaseInput from '@/components/BaseInput.vue'
 import StatCard from '@/components/StatCard.vue'
 import { apiService } from '@/services/api'
+import { reportsService } from '@/services/reports'
 // Using simple SVG icons instead of Heroicons
 const ChartBarIcon = 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
 const ChatBubbleLeftRightIcon = 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'
@@ -363,7 +364,25 @@ const xelenceToDate = ref('')
 
 const summaryStats = ref([
   {
-    key: 'total_sessions',
+    key: 'total_users',
+    title: 'Total Users',
+    value: 0,
+    period: 'All time',
+    loading: true,
+    icon: HeartIcon,
+    trend: null
+  },
+  {
+    key: 'active_users_in_period',
+    title: 'Active Users',
+    value: 0,
+    period: 'In the last 30 days',
+    loading: true,
+    icon: ClockIcon,
+    trend: null
+  },
+  {
+    key: 'sessions_in_period',
     title: 'Total Sessions',
     value: 0,
     period: 'In the last 30 days',
@@ -372,30 +391,12 @@ const summaryStats = ref([
     trend: null
   },
   {
-    key: 'total_messages',
+    key: 'messages_in_period',
     title: 'Messages Exchanged',
     value: 0,
     period: 'In the last 30 days',
     loading: true,
     icon: ChartBarIcon,
-    trend: null
-  },
-  {
-    key: 'avg_response_time',
-    title: 'Avg Response Time',
-    value: 0,
-    period: 'In the last 30 days',
-    loading: true,
-    icon: ClockIcon,
-    trend: null
-  },
-  {
-    key: 'satisfaction_score',
-    title: 'Satisfaction Score',
-    value: 0,
-    period: 'In the last 30 days',
-    loading: true,
-    icon: HeartIcon,
     trend: null
   }
 ])
@@ -502,16 +503,18 @@ const loadReports = async () => {
 
   try {
     // Load summary stats
-    const statsResponse = await apiService.get(`/reports/summary?days=${selectedPeriod.value}`)
-    
+    const statsResponse = await reportsService.getDashboardStats(Number(selectedPeriod.value))
+
     summaryStats.value.forEach(stat => {
       stat.loading = false
       stat.value = statsResponse[stat.key] || 0
-      stat.period = `In the last ${selectedPeriod.value} days`
+      stat.period = stat.key === 'total_users'
+        ? 'All time'
+        : `In the last ${selectedPeriod.value} days`
     })
 
     // Load detailed reports
-    const reportsResponse = await apiService.get(`/reports/detailed?days=${selectedPeriod.value}`)
+    const reportsResponse = await reportsService.getReports(Number(selectedPeriod.value))
     reports.value = Array.isArray(reportsResponse) ? reportsResponse : []
 
   } catch (err: any) {
