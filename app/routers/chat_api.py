@@ -75,14 +75,16 @@ async def chat_endpoint(
         db.add(user_message)
         db.commit()
         
-        # Get system prompt from bot instructions file
-        system_prompt = None
-        try:
-            with open("bot_instructions.txt", "r", encoding="utf-8") as f:
-                system_prompt = f.read().strip()
-        except FileNotFoundError:
-            logging.warning("bot_instructions.txt not found, using default prompt")
-            system_prompt = "You are a helpful AI assistant."
+        # Get user-specific instructions from the database
+        instruction_entry = db.query(models.UserInstruction).filter(
+            models.UserInstruction.user_id == user_id
+        ).first()
+
+        if instruction_entry and instruction_entry.instructions:
+            instructions = instruction_entry.instructions
+        else:
+            logging.info("No user instructions found, using default prompt")
+            instructions = "You are a helpful AI assistant."
         
         # Get chat history
         history = db.query(models.ChatMessage).filter(
@@ -103,7 +105,7 @@ async def chat_endpoint(
                     history_dicts, 
                     max_tokens=512, 
                     temperature=0.7, 
-                    system_prompt=system_prompt,
+                    system_prompt=instructions,
                     user_id=user_id,  # Use captured user ID instead of user.id
                     db_session=db,
                     session_id=session_id  # Pass session_id for conversation memory
