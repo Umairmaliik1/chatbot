@@ -48,8 +48,8 @@
       "type": "text",
       "required": true
     },
-    "account": {
-      "name": "settings.account",
+    "subdomain": {
+      "name": "settings.subdomain",
       "type": "text",
       "required": true
     }

@@ -8,7 +8,7 @@
     "settings":{
         "login":"Usuário",
         "api_key":"Chave da API",
-        "account":"Conta"
+        "subdomain":"Subdomínio"
     },
     "salesbot":{
         "handler_name":"Ponte de IA",
