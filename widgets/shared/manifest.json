@@ -51,7 +51,7 @@
     }
   },
   "salesbot_designer": {
-    "logo": "/widgets/shared/images/logo.png",
+    "logo": "/images/logo.png",
     "handler_name": {
       "name": "salesbot.handler_name",
       "settings": {
