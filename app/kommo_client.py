@@ -3,7 +3,8 @@ import json
 import logging
 from datetime import datetime
 from typing import Optional, Dict, List
-import requests
+
+import httpx
 from sqlalchemy.orm import Session
 
 from . import models
@@ -68,30 +69,29 @@ class KommoClient:
             "Content-Type": "application/json",
         }
 
-    def _request(self, method: str, endpoint: str, *, params=None, json_body=None) -> Optional[Dict]:
+    async def _request(self, method: str, endpoint: str, *, params=None, json_body=None) -> Optional[Dict]:
         if not self.base_url:
             logger.error("[Kommo] base_url not set")
             return None
 
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         try:
-            resp = requests.request(method.upper(), url, headers=self._headers(),
-                                    params=params, json=json_body, timeout=15)
+            async with httpx.AsyncClient(timeout=15) as client:
+                resp = await client.request(method.upper(), url, headers=self._headers(), params=params, json=json_body)
             if resp.status_code == 401:
                 logger.warning("[Kommo] 401 from %s – token invalid/expired", url)
-                # (Optional) implement refresh-token flow here if you use OAuth 2.0. See docs.  :contentReference[oaicite:3]{index=3}
                 return None
             resp.raise_for_status()
             if resp.content:
                 return resp.json()
             return {}
-        except Exception as e:
+        except httpx.HTTPError as e:
             logger.exception("[Kommo] Request error %s %s: %s", method, url, e)
             return None
 
     # --- Convenience methods (subset) ---
-    def test_connection(self) -> Dict:
-        res = self._request("GET", "leads", params={"limit": 1})
+    async def test_connection(self) -> Dict:
+        res = await self._request("GET", "leads", params={"limit": 1})
         ok = bool(res)
         return {
             "success": ok,
@@ -100,14 +100,14 @@ class KommoClient:
             "base_url": self.base_url,
         }
 
-    def get_leads(self, limit: int = 50, page: int = 1) -> List[Dict]:
-        res = self._request("GET", "leads", params={"limit": limit, "page": page})
+    async def get_leads(self, limit: int = 50, page: int = 1) -> List[Dict]:
+        res = await self._request("GET", "leads", params={"limit": limit, "page": page})
         return (res or {}).get("_embedded", {}).get("leads", [])
 
-    def get_contacts(self, limit: int = 50, page: int = 1) -> List[Dict]:
-        res = self._request("GET", "contacts", params={"limit": limit, "page": page})
+    async def get_contacts(self, limit: int = 50, page: int = 1) -> List[Dict]:
+        res = await self._request("GET", "contacts", params={"limit": limit, "page": page})
         return (res or {}).get("_embedded", {}).get("contacts", [])
 
-    def get_deals(self, limit: int = 50, page: int = 1) -> List[Dict]:
-        res = self._request("GET", "deals", params={"limit": limit, "page": page})
+    async def get_deals(self, limit: int = 50, page: int = 1) -> List[Dict]:
+        res = await self._request("GET", "deals", params={"limit": limit, "page": page})
         return (res or {}).get("_embedded", {}).get("deals", [])

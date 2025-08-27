@@ -9,8 +9,7 @@ python-multipart          # For FastAPI file uploads
 sqlalchemy                # For database ORM
 python-jose[cryptography] # For JWT tokens
 passlib[bcrypt]           # For password hashing
-requests
-httpx                     # For async HTTP requests to Kommo
+httpx                     # For async HTTP requests
 itsdangerous              # For signing session cookies for flash messages
 xmltodict
 protobuf
