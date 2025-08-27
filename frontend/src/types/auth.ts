@@ -7,6 +7,7 @@ export interface User {
   updated_at: string
   kommo_integration_key?: string
   kommo_widget_installed?: boolean
+  profile?: UserProfile
 }
 
 export interface LoginCredentials {
@@ -25,4 +26,17 @@ export interface ChangePasswordData {
   current_password: string
   new_password: string
   confirm_password: string
+}
+
+export interface UserProfile {
+  first_name?: string
+  last_name?: string
+  xelence_x_api_key?: string
+  xelence_affiliateid?: string
+  chat_rate?: number
+}
+
+export interface UserProfileUpdate extends UserProfile {
+  new_password?: string
+  confirm_password?: string
 }

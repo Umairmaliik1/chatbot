@@ -43,19 +43,18 @@
           
           <form @submit.prevent="updateProfile" class="space-y-6 p-6">
             <BaseInput
-              v-model="profileForm.username"
-              label="Username"
-              placeholder="Enter your username"
-              :error="profileErrors.username"
+              v-model="profileForm.firstName"
+              label="First Name"
+              placeholder="Enter your first name"
+              :error="profileErrors.firstName"
               required
             />
-            
+
             <BaseInput
-              v-model="profileForm.email"
-              type="email"
-              label="Email Address"
-              placeholder="Enter your email"
-              :error="profileErrors.email"
+              v-model="profileForm.lastName"
+              label="Last Name"
+              placeholder="Enter your last name"
+              :error="profileErrors.lastName"
               required
             />
             
@@ -322,13 +321,13 @@ const settingsTabs = [
 
 // Profile form
 const profileForm = ref({
-  username: '',
-  email: ''
+  firstName: '',
+  lastName: ''
 })
 
 const profileErrors = ref({
-  username: '',
-  email: ''
+  firstName: '',
+  lastName: ''
 })
 
 const isUpdatingProfile = ref(false)
@@ -385,28 +384,26 @@ const isUpdatingPreferences = ref(false)
 
 const updateProfile = async () => {
   // Validate form
-  profileErrors.value = { username: '', email: '' }
-  
-  if (!profileForm.value.username.trim()) {
-    profileErrors.value.username = 'Username is required'
+  profileErrors.value = { firstName: '', lastName: '' }
+
+  if (!profileForm.value.firstName.trim()) {
+    profileErrors.value.firstName = 'First name is required'
   }
-  
-  if (!profileForm.value.email.trim()) {
-    profileErrors.value.email = 'Email is required'
-  } else if (!/\S+@\S+\.\S+/.test(profileForm.value.email)) {
-    profileErrors.value.email = 'Email is invalid'
+
+  if (!profileForm.value.lastName.trim()) {
+    profileErrors.value.lastName = 'Last name is required'
   }
-  
-  if (profileErrors.value.username || profileErrors.value.email) {
+
+  if (profileErrors.value.firstName || profileErrors.value.lastName) {
     return
   }
-  
+
   isUpdatingProfile.value = true
-  
+
   try {
     await authStore.updateProfile({
-      username: profileForm.value.username,
-      email: profileForm.value.email
+      first_name: profileForm.value.firstName,
+      last_name: profileForm.value.lastName
     })
     
     showSuccess('Profile updated successfully!')
@@ -445,8 +442,8 @@ const changePassword = async () => {
   
   try {
     await authStore.changePassword({
-      current_password: passwordForm.value.currentPassword,
-      new_password: passwordForm.value.newPassword
+      new_password: passwordForm.value.newPassword,
+      confirm_password: passwordForm.value.confirmPassword
     })
     
     showSuccess('Password changed successfully!')
@@ -530,8 +527,8 @@ const loadSettings = async () => {
     // Load profile data from auth store
     if (authStore.user) {
       profileForm.value = {
-        username: authStore.user.username,
-        email: authStore.user.email
+        firstName: authStore.user.profile?.first_name || '',
+        lastName: authStore.user.profile?.last_name || ''
       }
       
       // Load Xelence credentials from existing user data
