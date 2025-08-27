@@ -1,12 +1,8 @@
 export interface User {
   id: number
   username: string
-  email: string
-  is_active: boolean
-  created_at: string
-  updated_at: string
+  email?: string
   kommo_integration_key?: string
-  kommo_widget_installed?: boolean
   profile?: UserProfile
 }
 
@@ -34,6 +30,7 @@ export interface UserProfile {
   xelence_x_api_key?: string
   xelence_affiliateid?: string
   chat_rate?: number
+  kommo_widget_installed?: boolean
 }
 
 export interface UserProfileUpdate extends UserProfile {
