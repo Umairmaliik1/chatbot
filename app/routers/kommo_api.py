@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from .. import models, auth
 from ..database import get_db
 from ..kommo_client import KommoClient
+from ..kommo_webhooks import KommoWebhookHandler
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/kommo", tags=["Kommo"])
@@ -210,6 +211,7 @@ async def test_integration(
 async def kommo_webhook(
     integration_key: str,
     request: Request,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     user = db.query(models.User).filter(
@@ -224,7 +226,12 @@ async def kommo_webhook(
     except Exception:
         payload = {"raw": body.decode("utf-8", "ignore")}
 
-    # IMPORTANT: Fast ACK (< 2s) for Salesbot
-    # If you want to continue a Salesbot flow, use the "return_url" that Salesbot posts in widget_request
-    logger.info("[Kommo] webhook for user %s: %s", user.id, list(payload)[:5])
+    integ = db.query(models.KommoIntegration).filter(models.KommoIntegration.user_id == user.id).first()
+
+    handler = KommoWebhookHandler(db)
+    background_tasks.add_task(
+        handler.process_webhook, user.id, payload, integ.webhook_secret if integ else None
+    )
+
+    logger.info("[Kommo] webhook received for user %s", user.id)
     return {"status": "ok"}
