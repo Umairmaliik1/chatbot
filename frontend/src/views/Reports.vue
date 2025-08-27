@@ -502,6 +502,13 @@ const loadReports = async () => {
   isLoadingCharts.value = true
 
   try {
+    // Determine date range for reports
+    const to = new Date()
+    const todate = to.toISOString().split('T')[0]
+    const from = new Date()
+    from.setDate(from.getDate() - Number(selectedPeriod.value))
+    const fromdate = from.toISOString().split('T')[0]
+
     // Load summary stats
     const statsResponse = await reportsService.getDashboardStats(Number(selectedPeriod.value))
 
@@ -514,7 +521,7 @@ const loadReports = async () => {
     })
 
     // Load detailed reports
-    const reportsResponse = await reportsService.getReports(Number(selectedPeriod.value))
+    const reportsResponse = await reportsService.getReports({ fromdate, todate })
     reports.value = Array.isArray(reportsResponse) ? reportsResponse : []
 
   } catch (err: any) {
