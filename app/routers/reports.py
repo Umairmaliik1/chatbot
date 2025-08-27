@@ -1,6 +1,7 @@
 import json
 import logging
-import requests
+
+import httpx
 import xmltodict
 from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel, Field
@@ -205,7 +206,8 @@ async def get_media_reports(
     logging.info("  Params: %s", params)
 
     try:
-        response = requests.get(API_URL, headers=headers, params=params, timeout=15)
+        async with httpx.AsyncClient(timeout=15) as client:
+            response = await client.get(API_URL, headers=headers, params=params)
         response.raise_for_status()
         
         # Log response details
@@ -249,10 +251,13 @@ async def get_media_reports(
         grouped_rows = _apply_grouping(filtered_rows, date_group, selected_properties)
 
         return {"reports": grouped_rows}
-    except requests.exceptions.RequestException as e:
-        # Check for specific auth error from the external API
-        if e.response and e.response.status_code in [401, 403]:
-             raise HTTPException(status_code=401, detail="Authentication failed with Xelence API. Please check your credentials in settings.")
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="The request to the external API timed out.")
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code in [401, 403]:
+            raise HTTPException(status_code=401, detail="Authentication failed with Xelence API. Please check your credentials in settings.")
+        raise HTTPException(status_code=502, detail=f"Failed to fetch data from external API: {e}")
+    except httpx.RequestError as e:
         raise HTTPException(status_code=502, detail=f"Failed to fetch data from external API: {e}")
     except ExpatError:
         # This happens if the response is not valid XML, e.g., an HTML error page.
