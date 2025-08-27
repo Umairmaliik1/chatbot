@@ -35,8 +35,8 @@ export interface DashboardStats {
 }
 
 export class ReportsService {
-  async getReports(days?: number): Promise<ReportData[]> {
-    return await apiService.get('/reports', days ? { days } : undefined)
+  async getReports(params: { fromdate: string; todate: string }): Promise<ReportData[]> {
+    return await apiService.get('/reports', { fromdate: params.fromdate, todate: params.todate })
   }
 
   async getDashboardStats(days?: number): Promise<DashboardStats> {
