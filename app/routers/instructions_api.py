@@ -111,7 +111,7 @@ async def parse_instructions_file(
         if not text_content:
             raise HTTPException(status_code=400, detail="File appears to be empty or could not be parsed")
         
-        return {"content": text_content}
+        return {"instructions": text_content}
         
     except Exception as e:
         logging.error(f"Error parsing instructions file: {e}")
