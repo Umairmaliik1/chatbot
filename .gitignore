@@ -15,3 +15,8 @@ env/
 
 # Data files
 data/
+
+# Secrets
+red
+red.pub
+
