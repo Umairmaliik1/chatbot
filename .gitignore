@@ -22,4 +22,4 @@ red.pub
 
 
 # Build artifacts
-widgets/shared/shared.zip
+widgets/shared/*.zip
