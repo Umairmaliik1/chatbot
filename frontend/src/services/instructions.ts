@@ -11,6 +11,7 @@ export interface FAQ {
   id?: number
   question: string
   answer: string
+  priority?: number
   created_at?: string
   updated_at?: string
 }
@@ -36,12 +37,17 @@ export class InstructionsService {
     return await apiService.get('/faqs')
   }
 
-  async createFAQ(question: string, answer: string): Promise<FAQ> {
-    return await apiService.post('/faqs', { question, answer })
+  async createFAQ(question: string, answer: string, priority?: number): Promise<FAQ> {
+    return await apiService.post('/faqs', { question, answer, priority })
   }
 
-  async updateFAQ(id: number, question: string, answer: string): Promise<FAQ> {
-    return await apiService.put(`/faqs/${id}`, { question, answer })
+  async updateFAQ(
+    id: number,
+    question: string,
+    answer: string,
+    priority?: number
+  ): Promise<FAQ> {
+    return await apiService.put(`/faqs/${id}`, { question, answer, priority })
   }
 
   async deleteFAQ(id: number): Promise<void> {
