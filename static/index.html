@@ -45,6 +45,7 @@
         // The history sent to the backend should only contain the actual conversation.
         // The initial greeting is already in the HTML for the UI.
         let history = [];
+        let sessionId = null;
 
         const toggleSendButton = () => {
             sendBtn.disabled = input.value.trim() === '';
@@ -68,6 +69,13 @@
             input.value = '';
             toggleSendButton();
 
+            // Create session if needed
+            if (!sessionId) {
+                const sessionRes = await fetch('/api/chat-sessions', { method: 'POST' });
+                const sessionData = await sessionRes.json();
+                sessionId = sessionData.session_id;
+            }
+
             // Create a placeholder for the assistant's response
             const assistantMsgDiv = addMessage('', 'assistant');
             assistantMsgDiv.innerHTML = 'Thinking...';
@@ -76,7 +84,7 @@
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ history: history })
+                    body: JSON.stringify({ message: userInput, session_id: sessionId })
                 });
 
                 if (!response.body) throw new Error("No response body");

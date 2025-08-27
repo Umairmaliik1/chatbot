@@ -25,7 +25,7 @@ export interface ChatMemory {
 
 export class ChatService {
   // Chat API endpoints
-  async sendMessage(message: string, sessionId?: number): Promise<ChatMessage> {
+  async sendMessage(message: string, sessionId: number): Promise<ChatMessage> {
     return await apiService.post('/chat', {
       message,
       session_id: sessionId
