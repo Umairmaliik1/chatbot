@@ -33,8 +33,21 @@ async def update_user_settings(
             raise HTTPException(status_code=400, detail="Passwords do not match.")
         if len(settings_data.new_password) < 8:
             raise HTTPException(status_code=400, detail="Password must be at least 8 characters long.")
-        
+
         user.hashed_password = hashing.Hash.bcrypt(settings_data.new_password)
 
     db.commit()
-    return {"message": "Settings updated successfully."}
+    db.refresh(profile)
+
+    profile_data = {
+        "first_name": profile.first_name,
+        "last_name": profile.last_name,
+        "xelence_x_api_key": profile.xelence_x_api_key,
+        "xelence_affiliateid": profile.xelence_affiliateid,
+        "chat_rate": profile.chat_rate,
+    }
+
+    return {
+        "message": "Settings updated successfully.",
+        "profile": profile_data,
+    }
