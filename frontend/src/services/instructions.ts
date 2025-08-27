@@ -2,7 +2,7 @@ import { apiService } from './api'
 
 export interface Instruction {
   id?: number
-  content: string
+  instructions: string
   created_at?: string
   updated_at?: string
 }
@@ -21,11 +21,11 @@ export class InstructionsService {
     return await apiService.get('/instructions')
   }
 
-  async updateInstructions(content: string): Promise<Instruction> {
-    return await apiService.post('/instructions', { content })
+  async updateInstructions(instructions: string): Promise<Instruction> {
+    return await apiService.post('/instructions', { instructions })
   }
 
-  async parseInstructionsFile(file: File): Promise<{ content: string }> {
+  async parseInstructionsFile(file: File): Promise<{ instructions: string }> {
     const formData = new FormData()
     formData.append('file', file)
     return await apiService.upload('/parse-instructions-file', formData)

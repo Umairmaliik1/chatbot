@@ -643,7 +643,7 @@ const uploadInstructionFile = async () => {
       }
     })
     
-    instructionForm.value.instructions = response.content
+    instructionForm.value.instructions = response.instructions
     showSuccess('File parsed successfully!')
     clearInstructionFile()
     openInstructionModal()
