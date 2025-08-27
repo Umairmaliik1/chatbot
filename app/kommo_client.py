@@ -111,3 +111,12 @@ class KommoClient:
     async def get_deals(self, limit: int = 50, page: int = 1) -> List[Dict]:
         res = await self._request("GET", "deals", params={"limit": limit, "page": page})
         return (res or {}).get("_embedded", {}).get("deals", [])
+
+    async def send_chat_message(self, conversation_id: str, text: str) -> bool:
+        """Send a message back to a Kommo chat conversation."""
+        payload = {
+            "conversation": {"id": conversation_id},
+            "message": {"text": text}
+        }
+        res = await self._request("POST", "chats/messages", json_body=payload)
+        return bool(res)

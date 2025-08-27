@@ -16,8 +16,16 @@ from sqlalchemy.orm import Session
 
 from . import models
 from .kommo_client import KommoClient
+from .langchain_client import LangChainGeminiClient
 
 logger = logging.getLogger(__name__)
+
+# Initialize Gemini client once. If it fails we still process webhooks but won't send AI replies.
+try:
+    gemini_client = LangChainGeminiClient()
+except Exception as e:
+    logger.error("Failed to initialize LangChainGeminiClient: %s", e)
+    gemini_client = None
 
 class KommoWebhookHandler:
     """Handles webhook events from Kommo CRM"""
@@ -134,17 +142,34 @@ class KommoWebhookHandler:
                 logger.warning("No message data in chat webhook")
                 return True  # Don't fail on missing message
             
-            logger.info(f"Received chat message from {message.get('sender', {}).get('name', 'Unknown')} "
-                       f"to {message.get('receiver', {}).get('name', 'Unknown')}")
-            
-            # Here you can implement logic to:
-            # 1. Store the message in your chat system
-            # 2. Trigger AI response generation
-            # 3. Link message to existing CRM entities
-            
-            # For now, just log the message
-            logger.info(f"Message text: {message.get('message', {}).get('text', 'No text')}")
-            
+            logger.info(
+                f"Received chat message from {message.get('sender', {}).get('name', 'Unknown')} "
+                f"to {message.get('receiver', {}).get('name', 'Unknown')}"
+            )
+
+            text = message.get('message', {}).get('text', '')
+            conversation_id = message.get('conversation', {}).get('id')
+
+            if not text:
+                logger.warning("Chat webhook missing message text")
+                return True
+
+            logger.info(f"Message text: {text}")
+
+            if gemini_client:
+                try:
+                    ai_response = gemini_client.generate_response(
+                        [{"role": "user", "content": text}],
+                        user_id=user_id,
+                        db_session=self.db
+                    )
+                    if ai_response and conversation_id:
+                        import asyncio
+                        client = KommoClient(user_id, self.db)
+                        asyncio.run(client.send_chat_message(conversation_id, ai_response))
+                except Exception as e:
+                    logger.error(f"Failed to generate or send AI response: {e}")
+
             return True
                 
         except Exception as e:
