@@ -1,0 +1,13 @@
+{
+    "widget":{
+	"name":"Exemplo de widget",
+        "short_description":"Breve descrição",
+        "description":"Descrição completa",
+        "tour_description":"É assim que um widget simples se parece"
+    },
+    "settings":{
+        "login":"Conecte-se",
+        "api_key":"Chave API",
+        "account":"Conta"
+    }
+}

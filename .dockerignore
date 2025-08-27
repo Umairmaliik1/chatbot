@@ -1,0 +1,25 @@
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+docker_compose.yaml
+.dockerignore
+
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local data - mounted via volumes, not copied into the image
+data/
+
+# IDE / OS files
+.idea/
+.vscode/
+.DS_Store

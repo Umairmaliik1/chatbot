@@ -1,0 +1,17 @@
+{
+    "widget":{
+        "name":"Ponte de IA",
+        "short_description":"Roteia chats para sua IA",
+        "description":"Envia mensagens de chat recebidas para seu servidor e posta a resposta da IA.",
+        "tour_description":"Este é um widget simples de integração de IA"
+    },
+    "settings":{
+        "login":"Usuário",
+        "api_key":"Chave da API",
+        "account":"Conta"
+    },
+    "salesbot":{
+        "handler_name":"Ponte de IA",
+        "text":"URL do Webhook"
+    }
+}

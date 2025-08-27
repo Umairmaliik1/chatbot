@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kommo AI Chat</title>
+    <style>
+        :root {
+            --user-bg: #e2e8f0;
+            --assistant-bg: #e5e7eb;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+            --input-bg: #fff;
+        }
+        html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); font-size: 14px; }
+        #chat-container { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
+        #messages { flex-grow: 1; overflow-y: auto; padding: 12px; }
+        .message { max-width: 80%; margin-bottom: 10px; padding: 8px 12px; border-radius: 12px; line-height: 1.4; word-wrap: break-word; }
+        .user { background-color: var(--user-bg); align-self: flex-end; margin-left: auto; }
+        .assistant { background-color: var(--assistant-bg); align-self: flex-start; }
+        #input-area { display: flex; padding: 12px; border-top: 1px solid var(--border-color); background-color: var(--bg-color); }
+        #chat-input { flex-grow: 1; border: 1px solid var(--border-color); border-radius: 16px; padding: 8px 12px; font-size: 14px; background-color: var(--input-bg); }
+        #chat-input:focus { outline: none; border-color: #4f46e5; }
+        #send-btn { background: #4f46e5; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; margin-left: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        #send-btn:disabled { background: #a5b4fc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="messages">
+            <div class="message assistant">Hello! How can I help you today?</div>
+        </div>
+        <div id="input-area">
+            <input type="text" id="chat-input" placeholder="Type your message...">
+            <button id="send-btn" disabled>&#x27A4;</button>
+        </div>
+    </div>
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const input = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        
+        // The history sent to the backend should only contain the actual conversation.
+        // The initial greeting is already in the HTML for the UI.
+        let history = [];
+
+        const toggleSendButton = () => {
+            sendBtn.disabled = input.value.trim() === '';
+        };
+
+        input.addEventListener('input', toggleSendButton);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !sendBtn.disabled) {
+                sendMessage();
+            }
+        });
+        sendBtn.addEventListener('click', () => sendMessage());
+
+        async function sendMessage() {
+            const userInput = input.value.trim();
+            if (!userInput) return;
+
+            // Add user message to UI and history
+            addMessage(userInput, 'user');
+            history.push({ role: 'user', content: userInput });
+            input.value = '';
+            toggleSendButton();
+
+            // Create a placeholder for the assistant's response
+            const assistantMsgDiv = addMessage('', 'assistant');
+            assistantMsgDiv.innerHTML = 'Thinking...';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ history: history })
+                });
+
+                if (!response.body) throw new Error("No response body");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let assistantResponse = '';
+                assistantMsgDiv.innerHTML = ''; // Clear "Thinking..."
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value, { stream: true });
+                    assistantResponse += chunk;
+                    assistantMsgDiv.innerHTML += chunk.replace(/\n/g, '<br>');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+                history.push({ role: 'assistant', content: assistantResponse });
+
+            } catch (error) {
+                console.error('Error fetching chat response:', error);
+                assistantMsgDiv.innerHTML = 'Sorry, something went wrong.';
+            }
+        }
+
+        function addMessage(text, role) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', role);
+            msgDiv.textContent = text;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return msgDiv;
+        }
+
+        toggleSendButton(); // Initial check
+    </script>
+</body>
+</html>

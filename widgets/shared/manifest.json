@@ -1,0 +1,67 @@
+{
+  "widget": {
+    "name": "widget.name",
+    "description": "widget.description",
+    "short_description": "widget.short_description",
+    "version": "1.0.1",
+    "interface_version": 2,
+    "init_once": true,
+    "locale": [
+    "en",
+    "es",
+    "pt"
+  ],
+    "installation": true,
+    "support": {
+      "link": "https://www.example.com",
+      "email": "support@example.com"
+    }
+  },
+  "locations": ["salesbot_designer"],
+  "tour": {
+    "is_tour": true,
+    "tour_images": {
+      "en": [
+            "/images/en.jpg"
+          ],
+      "es": [
+            "/images/es.jpg"
+         ],
+      "pt": [
+          "/images/pt.jpg"
+         ]
+    },
+    "tour_description": "widget.tour_description"
+  },
+  "settings": {
+    "login": {
+      "name": "settings.login",
+      "type": "text",
+      "required": true
+    },
+    "api_key": {
+      "name": "settings.api_key",
+      "type": "text",
+      "required": true
+    },
+    "account": {
+      "name": "settings.account",
+      "type": "text",
+      "required": true
+    }
+  },
+  "salesbot_designer": {
+    "logo": "/widgets/shared/images/logo.png",
+    "handler_name": {
+      "name": "salesbot.handler_name",
+      "settings": {
+        "text": {
+          "name": "salesbot.text",
+          "default_value": "https://9dfbf46b7e88.ngrok-free.app/api/kommo/kommo/widget-request",
+          "type": "text",
+          "manual": true
+        }
+      }
+    }
+  }
+}

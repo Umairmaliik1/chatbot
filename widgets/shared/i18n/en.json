@@ -1,0 +1,17 @@
+{
+  "widget": {
+    "name": "AI Bridge",
+    "short_description": "Route chats to your AI",
+    "description": "Sends incoming chat messages to your server and posts the AI reply back.",
+    "tour_description": "Take a quick look at how our AI Bridge works"
+  },
+  "salesbot": {
+    "handler_name": "AI Bridge",
+    "text": "Webhook URL"
+  },
+  "settings": {
+    "login": "User login",
+    "api_key": "API key",
+    "account": "Account"
+  }
+}

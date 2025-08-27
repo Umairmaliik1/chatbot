@@ -1,0 +1,6 @@
+2025-08-25 14:27:53 | KOMO_CRM | INFO | Kommo CRM logging configured successfully
+2025-08-25 14:27:53 | KOMO_CRM | INFO | Log files location: logs/
+2025-08-25 14:27:53 | KOMO_CRM | INFO | Testing Kommo CRM logging
+2025-08-25 14:27:53 | KOMO_CRM | WARNING | This is a test warning
+2025-08-25 14:27:53 | KOMO_CRM | ERROR | This is a test error
+2025-08-25 14:27:53 | KOMO_CRM | DEBUG | This is a test debug message

@@ -1,0 +1,13 @@
+{
+    "widget":{
+        "name":"Sample Widget",
+        "short_description":"This is a short description!",
+        "description":"This is a full description!",
+        "tour_description":"This is what a simple widget looks like"
+    },
+    "settings":{
+        "login":"User login",
+        "api_key":"API key",
+        "account":"Account"
+    }
+}

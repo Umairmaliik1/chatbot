@@ -1,0 +1,20 @@
+fastapi
+uvicorn[standard]
+numpy<2.0
+jinja2
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+google-generativeai        # Gemini API client
+python-multipart          # For FastAPI file uploads
+sqlalchemy                # For database ORM
+python-jose[cryptography] # For JWT tokens
+passlib[bcrypt]           # For password hashing
+requests
+httpx                     # For async HTTP requests to Kommo
+itsdangerous              # For signing session cookies for flash messages
+xmltodict
+protobuf
+PyPDF2                    # For PDF parsing
+pdfplumber                # Alternative PDF parser
+langchain                 # Core LangChain functionality
+langchain-google-genai    # Google Gemini integration for LangChain

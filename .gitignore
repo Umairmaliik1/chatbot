@@ -1,0 +1,15 @@
+# Python artifacts
+__pycache__/
+*.pyc
+
+# Environment
+.venv/
+env/
+#.env
+
+# IDE-specific
+.vscode/
+.idea/
+
+# Data files
+data/
