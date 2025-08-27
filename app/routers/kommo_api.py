@@ -45,6 +45,14 @@ class ConfigureJSON(BaseModel):
     refresh_token: Optional[str] = None
     webhook_secret: Optional[str] = None
 
+
+class WidgetRequestPayload(BaseModel):
+    message: str
+    chat_id: str
+    lead_id: Optional[str] = None
+    visitor_id: Optional[str] = None
+    from_: Optional[str] = Field(None, alias="from")
+
 # -------------------------------
 # Status
 # -------------------------------
@@ -202,6 +210,16 @@ async def test_integration(
     if not res.get("success"):
         raise HTTPException(status_code=400, detail="Unable to reach Kommo API")
 
+    return {"status": "ok"}
+
+# -------------------------------
+# Widget request endpoint
+# -------------------------------
+@router.post("/kommo/widget-request")
+async def widget_request(payload: WidgetRequestPayload):
+    """Handle inbound requests from the Kommo Salesbot widget."""
+    source = payload.from_ or "unknown"
+    logger.info(f"Received widget request from {source}: {payload.dict()}")
     return {"status": "ok"}
 
 # -------------------------------

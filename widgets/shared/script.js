@@ -38,7 +38,6 @@ define(['jquery'], function($){
 
                     // Data we want to send to your server on every inbound message:
                     const requestData = {
-                      from: 'widget',
                       // message_text comes from the previous step (Incoming message)
                       message: '{{message_text}}',
                       chat_id: '{{chat_id}}',
