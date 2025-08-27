@@ -96,8 +96,7 @@ class ApiService {
 
   // Direct GET method that doesn't wrap params
   async getDirect<T>(endpoint: string, params?: any): Promise<T> {
-    const response = await this.api.get(endpoint, { params })
-    return response.data
+    return await this.api.get(endpoint, { params })
   }
 
   async post<T>(endpoint: string, data?: any, config?: any): Promise<T> {
