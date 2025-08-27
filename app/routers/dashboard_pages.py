@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import APIRouter, Request, Depends, Form, HTTPException
+from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 # Templates removed - using Vue.js frontend
 from sqlalchemy.orm import Session
@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from .. import auth, models, database
 from ..settings import settings
 from ..flash import flash, get_flashed_messages
-from ..hashing import Hash
 import secrets
 
 router = APIRouter(
@@ -112,66 +111,6 @@ async def settings_page(
 
 # --- Form Submission Endpoints for Settings Page ---
 
-@router.post("/update-profile", name="update_profile")
-async def update_profile(
-    request: Request,
-    db: Session = Depends(database.get_db),
-    user: models.User = Depends(auth.get_current_user_for_page),
-    username: str = Form(...),
-    email: str = Form(...)
-):
-    if isinstance(user, RedirectResponse):
-        return user
-    # Check if the new username is already taken by another user
-    if username != user.username and db.query(models.User).filter(models.User.username == username).first():
-        flash(request, "Username already taken.", "error")
-        return RedirectResponse(url=request.url_for("settings"), status_code=303)
-
-    # Check if the new email is already taken by another user
-    if email != user.email and db.query(models.User).filter(models.User.email == email).first():
-        flash(request, "An account with this email already exists.", "error")
-        return RedirectResponse(url=request.url_for("settings"), status_code=303)
-
-    user.username = username
-    user.email = email
-    db.commit()
-
-    # Log the user out for security reasons after changing credentials.
-    # The login page will show the message from the query parameter.
-    response = RedirectResponse(url="/login?message=Profile updated. Please log in again.", status_code=302)
-    response.delete_cookie(key="access_token")
-    return response
-
-@router.post("/update-password", name="update_password")
-async def update_password(
-    request: Request,
-    db: Session = Depends(database.get_db),
-    user: models.User = Depends(auth.get_current_user_for_page),
-    current_password: str = Form(...),
-    new_password: str = Form(...),
-    confirm_password: str = Form(...)
-):
-    if isinstance(user, RedirectResponse):
-        return user
-    if not Hash.verify(user.hashed_password, current_password):
-        flash(request, "Current password is not correct.", "error")
-        return RedirectResponse(url=request.url_for("settings"), status_code=303)
-    
-    if new_password != confirm_password:
-        flash(request, "New passwords do not match.", "error")
-        return RedirectResponse(url=request.url_for("settings"), status_code=303)
-
-    if len(new_password) < 8:
-        flash(request, "New password must be at least 8 characters long.", "error")
-        return RedirectResponse(url=request.url_for("settings"), status_code=303)
-
-    user.hashed_password = Hash.bcrypt(new_password)
-    db.commit()
-    # Log the user out for security reasons after changing credentials.
-    # The login page will show the message from the query parameter.
-    response = RedirectResponse(url="/login?message=Password updated. Please log in again.", status_code=302)
-    response.delete_cookie(key="access_token")
-    return response
 
 @router.post("/update-api-settings", name="update_api_settings")
 async def update_api_settings(

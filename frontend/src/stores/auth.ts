@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { apiService } from '@/services/api'
-import type { User, LoginCredentials, SignupData } from '@/types/auth'
+import type { User, LoginCredentials, SignupData, UserProfileUpdate } from '@/types/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -92,13 +92,15 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const updateProfile = async (data: Partial<User>) => {
+  const updateProfile = async (data: UserProfileUpdate) => {
     isLoading.value = true
     error.value = null
     
     try {
-      const response = await apiService.dashboardPost<{ user: User }>('/dashboard/update-profile', data)
-      user.value = response.user
+      const response = await apiService.post('/settings', data)
+      if (user.value) {
+        user.value.profile = { ...(user.value.profile || {}), ...response }
+      }
       return response
     } catch (err: any) {
       error.value = err.message || 'Profile update failed'
@@ -108,12 +110,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const changePassword = async (data: { current_password: string; new_password: string }) => {
+  const changePassword = async (data: Pick<UserProfileUpdate, 'new_password' | 'confirm_password'>) => {
     isLoading.value = true
     error.value = null
-    
+
     try {
-      const response = await apiService.dashboardPost<{ message: string }>('/dashboard/update-password', data)
+      const response = await apiService.post<{ message: string }>('/settings', data)
       return response
     } catch (err: any) {
       error.value = err.message || 'Password change failed'
