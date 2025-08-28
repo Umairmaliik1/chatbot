@@ -4,7 +4,7 @@ export interface ChatMessage {
   id?: number
   content: string
   role: 'user' | 'assistant'
-  timestamp?: string
+  created_at?: string
   session_id?: number
 }
 
@@ -54,7 +54,9 @@ export class ChatService {
 
   // Chat History
   async getChatHistory(sessionId: number): Promise<ChatMessage[]> {
-    return await apiService.get(`/chat-history/${sessionId}`)
+    const response = await apiService.get(`/chat-history/${sessionId}`)
+    // The API returns { session_id, messages }, so we extract the messages array
+    return response.messages || []
   }
 
   // Chat Memory
@@ -64,6 +66,11 @@ export class ChatService {
 
   async clearChatMemory(sessionId: number): Promise<void> {
     return await apiService.delete(`/chat-memory/${sessionId}`)
+  }
+
+  // Update session title
+  async updateSessionTitle(sessionId: number, title: string): Promise<{ message: string; title: string }> {
+    return await apiService.put(`/chat-sessions/${sessionId}/title`, { title })
   }
 
   // Test endpoint

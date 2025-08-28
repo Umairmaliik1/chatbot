@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
-          <p class="mt-2 text-gray-600">Manage your account settings and preferences.</p>
+          
         </div>
       </div>
     </div>
@@ -542,13 +542,16 @@ const loadSettings = async () => {
     }
     
     // Load API settings
-    const apiResponse = await apiService.get('/settings/api')
+    const apiResponse = await apiService.get('/settings/api') as { 
+      gemini_configured?: boolean;
+      usage?: { requests: number; tokens: number };
+    }
     geminiApiStatus.value = apiResponse.gemini_configured || false
     apiUsage.value = apiResponse.usage || { requests: 0, tokens: 0 }
     
     // Load preferences
-    const prefsResponse = await apiService.get('/settings/preferences')
-    preferences.value = { ...preferences.value, ...prefsResponse }
+    const prefsResponse = await apiService.get('/settings/preferences') 
+    preferences.value = Object.assign({}, preferences.value, prefsResponse)
     
   } catch (err: any) {
     console.error('Failed to load settings:', err)

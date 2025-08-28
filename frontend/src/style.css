@@ -214,7 +214,44 @@
     @apply animate-pulse bg-gray-200 rounded;
   }
   
-  /* Toast Components */
+  /* Corporate Toast Components */
+  .corporate-toast {
+    @apply relative max-w-md w-full bg-white rounded-xl shadow-xl border border-gray-200/50 backdrop-blur-sm transform transition-all duration-300;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .corporate-toast-success {
+    @apply bg-gradient-to-r from-white to-emerald-50/30 border-l-4 border-l-emerald-500;
+  }
+  
+  .corporate-toast-error {
+    @apply bg-gradient-to-r from-white to-red-50/30 border-l-4 border-l-red-500;
+  }
+  
+  .corporate-toast-warning {
+    @apply bg-gradient-to-r from-white to-amber-50/30 border-l-4 border-l-amber-500;
+  }
+  
+  .corporate-toast-info {
+    @apply bg-gradient-to-r from-white to-blue-50/30 border-l-4 border-l-blue-500;
+  }
+
+  /* Progress bar animation */
+  .progress-bar {
+    @apply transition-all duration-300 ease-linear;
+    animation: progress-shrink var(--duration, 5s) linear forwards;
+  }
+
+  @keyframes progress-shrink {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+
+  /* Legacy Toast Components - Keep for backward compatibility */
   .toast {
     @apply fixed top-4 right-4 z-50 max-w-sm w-full bg-white shadow-strong rounded-lg border border-gray-200 transform transition-all duration-300;
   }

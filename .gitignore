@@ -5,6 +5,7 @@ __pycache__/
 # Environment
 .venv/
 env/
+.env/          # added
 .env
 .env.local
 .env.*.local
@@ -19,7 +20,12 @@ data/
 # Secrets
 red
 red.pub
+frontend/node_modules/
+static/dist/
 
+# Node/JS artifacts (added)
+node_modules/   # added
+dist/           # added
 
 # Build artifacts
 widgets/shared/*.zip

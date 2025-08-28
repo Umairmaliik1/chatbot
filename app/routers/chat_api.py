@@ -5,6 +5,7 @@ import logging
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from typing import List, Dict
 import json
 
@@ -54,7 +55,7 @@ async def chat_endpoint(
         # Capture the user ID early to avoid session binding issues
         user_id = user.id
         
-        # Get or create chat session
+        # Get chat session
         chat_session = db.query(models.ChatSession).filter(
             models.ChatSession.id == session_id,
             models.ChatSession.user_id == user_id  # Use captured user ID
@@ -201,9 +202,10 @@ async def create_chat_session(
         db.refresh(session)
         
         return {
-            "session_id": session.id,
+            "id": session.id,
             "title": session.title,
-            "created_at": session.created_at.isoformat()
+            "created_at": session.created_at.isoformat(),
+            "updated_at": session.updated_at.isoformat()
         }
         
     except Exception as e:
@@ -290,6 +292,40 @@ async def get_chat_memory_info(
     memory_info = gemini_client.get_session_memory_info(session_id)
     
     return memory_info
+
+@router.put("/chat-sessions/{session_id}/title")
+async def update_session_title(
+    session_id: int,
+    title_update: dict,
+    user: models.User = Depends(auth.get_current_user_for_api),
+    db: Session = Depends(get_db)
+):
+    """Update the title of a chat session."""
+    
+    # Verify session belongs to user
+    session = db.query(models.ChatSession).filter(
+        models.ChatSession.id == session_id,
+        models.ChatSession.user_id == user.id
+    ).first()
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Chat session not found")
+    
+    try:
+        new_title = title_update.get("title", "").strip()
+        if not new_title:
+            raise HTTPException(status_code=400, detail="Title is required")
+        
+        session.title = new_title
+        session.updated_at = func.now()
+        db.commit()
+        
+        return {"message": "Session title updated successfully", "title": new_title}
+        
+    except Exception as e:
+        db.rollback()
+        logging.error(f"Error updating session title: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update session title")
 
 @router.delete("/chat-memory/{session_id}")
 async def clear_chat_memory(

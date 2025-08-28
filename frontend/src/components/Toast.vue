@@ -1,31 +1,50 @@
 <template>
   <Transition
-    enter-active-class="transform ease-out duration-300 transition"
-    enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-    enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
-    leave-active-class="transition ease-in duration-100"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
+    enter-active-class="transform ease-out duration-500 transition-all"
+    enter-from-class="translate-x-full opacity-0 scale-95"
+    enter-to-class="translate-x-0 opacity-100 scale-100"
+    leave-active-class="transition ease-in duration-300"
+    leave-from-class="opacity-100 scale-100"
+    leave-to-class="opacity-0 scale-95 translate-x-4"
   >
-    <div v-if="isVisible" class="toast" :class="toastClasses">
-      <div class="flex items-start">
+    <div v-if="isVisible" class="corporate-toast" :class="toastClasses">
+      <!-- Progress bar -->
+      <div class="absolute top-0 left-0 h-1 w-full bg-black/5 rounded-t-xl overflow-hidden">
+        <div 
+          class="h-full progress-bar" 
+          :class="progressClasses"
+          :style="{ animationDuration: `${props.duration}ms` }"
+        ></div>
+      </div>
+      
+      <div class="flex items-start gap-4 p-5">
+        <!-- Icon with background -->
         <div class="flex-shrink-0">
-          <svg class="h-5 w-5" :class="iconClasses" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="iconComponent" />
-          </svg>
+          <div class="flex items-center justify-center w-10 h-10 rounded-full" :class="iconBgClasses">
+            <svg class="w-5 h-5" :class="iconClasses" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" :d="iconComponent" />
+            </svg>
+          </div>
         </div>
-        <div class="ml-3 w-0 flex-1">
-          <p class="text-sm font-medium text-gray-900">{{ title }}</p>
-          <p v-if="message" class="mt-1 text-sm text-gray-500">{{ message }}</p>
+        
+        <!-- Content -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <h4 class="font-semibold text-gray-900 text-sm leading-5">{{ title }}</h4>
+            <span class="text-xs text-gray-400 font-medium">{{ timeAgo }}</span>
+          </div>
+          <p v-if="message" class="mt-1 text-sm text-gray-600 leading-5">{{ message }}</p>
         </div>
-        <div class="ml-4 flex-shrink-0 flex">
+        
+        <!-- Close button -->
+        <div class="flex-shrink-0">
           <button
             @click="close"
-            class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
           >
             <span class="sr-only">Close</span>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -36,7 +55,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-// Using simple SVG icons instead of Heroicons
+
+// Icon definitions
 const CheckCircleIcon = 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
 const ExclamationTriangleIcon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
 const InformationCircleIcon = 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
@@ -59,13 +79,14 @@ const emit = defineEmits<{
 }>()
 
 const isVisible = ref(false)
+const startTime = ref(Date.now())
 
 const toastClasses = computed(() => {
   const typeClasses = {
-    success: 'toast-success',
-    error: 'toast-error',
-    warning: 'toast-warning',
-    info: 'toast-info'
+    success: 'corporate-toast-success',
+    error: 'corporate-toast-error', 
+    warning: 'corporate-toast-warning',
+    info: 'corporate-toast-info'
   }
   return typeClasses[props.type]
 })
@@ -82,12 +103,36 @@ const iconComponent = computed(() => {
 
 const iconClasses = computed(() => {
   const typeClasses = {
-    success: 'text-success-400',
-    error: 'text-error-400',
-    warning: 'text-warning-400',
-    info: 'text-primary-400'
+    success: 'text-emerald-600',
+    error: 'text-red-600',
+    warning: 'text-amber-600',
+    info: 'text-blue-600'
   }
   return typeClasses[props.type]
+})
+
+const iconBgClasses = computed(() => {
+  const typeClasses = {
+    success: 'bg-emerald-50 border border-emerald-100',
+    error: 'bg-red-50 border border-red-100',
+    warning: 'bg-amber-50 border border-amber-100',
+    info: 'bg-blue-50 border border-blue-100'
+  }
+  return typeClasses[props.type]
+})
+
+const progressClasses = computed(() => {
+  const typeClasses = {
+    success: 'bg-emerald-500',
+    error: 'bg-red-500',
+    warning: 'bg-amber-500',
+    info: 'bg-blue-500'
+  }
+  return typeClasses[props.type]
+})
+
+const timeAgo = computed(() => {
+  return 'now'
 })
 
 const close = () => {
@@ -99,6 +144,7 @@ const close = () => {
 
 onMounted(() => {
   isVisible.value = true
+  startTime.value = Date.now()
   
   if (props.duration > 0) {
     setTimeout(() => {

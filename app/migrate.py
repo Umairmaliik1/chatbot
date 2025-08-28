@@ -1,6 +1,9 @@
 import sys
 from pathlib import Path
 from sqlalchemy import inspect, text
+import sqlite3
+import os
+from datetime import datetime
 
 # Add project root to the Python path.
 # The script is inside 'app', so we need to go up one level to the project root.
@@ -47,5 +50,50 @@ def run_migration():
 
     print("✅ Migration check complete. Database schema is up to date.")
 
+def migrate_database():
+    """Run database migrations."""
+    db_path = "app.db"
+    
+    if not os.path.exists(db_path):
+        print("Database not found. Please run the application first to create it.")
+        return
+    
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    try:
+        # Check if updated_at column exists in chat_sessions
+        cursor.execute("PRAGMA table_info(chat_sessions)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'updated_at' not in columns:
+            print("Adding updated_at column to chat_sessions table...")
+            
+            # Add updated_at column with default value
+            cursor.execute("""
+                ALTER TABLE chat_sessions 
+                ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            """)
+            
+            # Update existing records to have updated_at = created_at
+            cursor.execute("""
+                UPDATE chat_sessions 
+                SET updated_at = created_at 
+                WHERE updated_at IS NULL
+            """)
+            
+            print("✅ Successfully added updated_at column to chat_sessions table")
+        else:
+            print("✅ updated_at column already exists in chat_sessions table")
+        
+        conn.commit()
+        
+    except Exception as e:
+        print(f"❌ Error during migration: {e}")
+        conn.rollback()
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
     run_migration()
+    migrate_database()
