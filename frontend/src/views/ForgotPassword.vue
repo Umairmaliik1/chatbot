@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <div class="flex justify-center">
         <div class="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center">
@@ -8,10 +8,10 @@
           </svg>
         </div>
       </div>
-      <h2 class="mt-6 text-center text-3xl font-bold text-gray-900">
+      <h2 class="mt-6 text-center text-3xl font-bold text-gray-900 dark:text-white">
         Reset your password
       </h2>
-      <p class="mt-2 text-center text-sm text-gray-600">
+      <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
         Enter your email address and we'll send you a link to reset your password.
       </p>
     </div>

@@ -11,17 +11,17 @@ import json
 
 from .. import models, auth
 from ..database import get_db
-from ..langchain_client import LangChainGeminiClient  # Updated import
+from ..ai_client import get_ai_client  # Updated import
 
 router = APIRouter()
 
-# Initialize LangChain Gemini client
+# Initialize unified AI client
 try:
-    gemini_client = LangChainGeminiClient()
-    logging.info("✅ LangChain Gemini client initialized successfully")
+    ai_client = get_ai_client()
+    logging.info("✅ Unified AI client initialized successfully")
 except Exception as e:
-    logging.error(f"❌ Failed to initialize LangChain Gemini client: {e}")
-    gemini_client = None
+    logging.error(f"❌ Failed to initialize AI client: {e}")
+    ai_client = None
 
 @router.get("/test")
 async def test_endpoint():
@@ -34,9 +34,9 @@ async def chat_endpoint(
     user: models.User = Depends(auth.get_current_user_for_api),
     db: Session = Depends(get_db)
 ):
-    """Chat endpoint that streams responses from Gemini API with conversation memory."""
+    """Chat endpoint that streams responses from AI providers with conversation memory."""
     
-    if not gemini_client:
+    if not ai_client:
         raise HTTPException(status_code=500, detail="AI service is not available")
     
     try:
@@ -98,18 +98,38 @@ async def chat_endpoint(
             for msg in history
         ]
         
+        # Get user's settings (response delay and AI provider)
+        user_profile = db.query(models.UserProfile).filter(
+            models.UserProfile.user_id == user_id
+        ).first()
+        
+        response_delay = 0
+        ai_provider = "gemini"  # Default provider
+        
+        if user_profile:
+            if user_profile.response_delay_seconds:
+                response_delay = user_profile.response_delay_seconds
+            if user_profile.ai_provider:
+                ai_provider = user_profile.ai_provider
+
         # Create streaming response
         async def stream_and_save_logic():
             try:
-                # Generate the response stream using LangChain client with session memory
-                stream = gemini_client.generate_stream(
+                # Add response delay if configured
+                if response_delay > 0:
+                    import asyncio
+                    await asyncio.sleep(response_delay)
+                
+                # Generate the response stream using unified AI client
+                stream = ai_client.generate_stream(
                     history_dicts, 
                     max_tokens=512, 
                     temperature=0.7, 
                     system_prompt=instructions,
-                    user_id=user_id,  # Use captured user ID instead of user.id
+                    user_id=user_id,
                     db_session=db,
-                    session_id=session_id  # Pass session_id for conversation memory
+                    session_id=session_id,
+                    provider=ai_provider  # Use user's selected provider
                 )
                 
                 # Stream the response
@@ -252,10 +272,10 @@ async def delete_chat_session(
         raise HTTPException(status_code=404, detail="Chat session not found")
     
     try:
-        # Clear the session memory from LangChain client
-        if gemini_client:
-            gemini_client.clear_session_memory(session_id)
-            logging.info(f"Cleared LangChain memory for session {session_id}")
+        # Clear the session memory from AI client
+        if ai_client:
+            ai_client.clear_session_memory(session_id)
+            logging.info(f"Cleared AI client memory for session {session_id}")
         
         # Delete all messages first (cascade should handle this)
         db.delete(session)
@@ -285,11 +305,11 @@ async def get_chat_memory_info(
     if not session:
         raise HTTPException(status_code=404, detail="Chat session not found")
     
-    if not gemini_client:
+    if not ai_client:
         raise HTTPException(status_code=500, detail="AI service is not available")
     
-    # Get memory information from LangChain client
-    memory_info = gemini_client.get_session_memory_info(session_id)
+    # Get memory information from AI client
+    memory_info = ai_client.get_session_memory_info(session_id)
     
     return memory_info
 
@@ -344,12 +364,12 @@ async def clear_chat_memory(
     if not session:
         raise HTTPException(status_code=404, detail="Chat session not found")
     
-    if not gemini_client:
+    if not ai_client:
         raise HTTPException(status_code=500, detail="AI service is not available")
     
     try:
-        # Clear the session memory from LangChain client
-        gemini_client.clear_session_memory(session_id)
+        # Clear the session memory from AI client
+        ai_client.clear_session_memory(session_id)
         
         return {"message": f"Conversation memory cleared for session {session_id}"}
         

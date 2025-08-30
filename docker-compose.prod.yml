@@ -1,0 +1,44 @@
+# Production docker-compose file for VPS deployment
+
+services:
+  app:
+    image: umairmalick/chatbot:latest  # Replace with your actual image
+    container_name: chatbot-app
+    restart: unless-stopped
+    user: "0:0"  # Run as root to avoid permission issues
+    ports:
+      - "127.0.0.1:8000:8000"  # Only bind to localhost for nginx proxy
+    environment:
+      - ENV=production
+      - PYTHONPATH=/app
+      - GEMINI_API_KEY=AIzaSyBshm6u1lCQCHBhFLY8-3HBD-2iEv2KG8Y
+      - DATABASE_URL=sqlite:////app/data/app.db
+    volumes:
+      # Persist database and data directory
+      - ./data:/app/data
+      # Persist logs
+      - ./logs:/app/logs
+    command: >
+      sh -c "mkdir -p /app/data && 
+             chmod 777 /app/data && 
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1"
+    networks:
+      - chatbot-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/api/health', timeout=10)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+networks:
+  chatbot-network:
+    driver: bridge

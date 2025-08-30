@@ -72,9 +72,33 @@ async def handle_login_api(
 
     access_token = auth.create_access_token(data={"sub": user.username}, expires_delta=expires_delta)
     
-    # Return JSON response for API calls
+    # Return JSON response for API calls with full user + profile so frontend can render immediately
     from fastapi.responses import JSONResponse
-    response = JSONResponse(content={"message": "Login successful", "user": {"id": user.id, "username": user.username}})
+    # Ensure profile is loaded
+    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
+    user_payload = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "kommo_integration_key": user.kommo_integration_key,
+    }
+    if profile:
+        user_payload["profile"] = {
+            "xelence_affiliateid": profile.xelence_affiliateid,
+            "xelence_x_api_key": profile.xelence_x_api_key,
+            "first_name": profile.first_name,
+            "last_name": profile.last_name,
+            "chat_rate": profile.chat_rate,
+            "kommo_widget_installed": profile.kommo_widget_installed,
+            # AI settings
+            "response_delay_seconds": profile.response_delay_seconds,
+            "ai_provider": profile.ai_provider,
+            # User customization
+            "custom_logo_url": profile.custom_logo_url,
+            "custom_favicon_url": profile.custom_favicon_url,
+            "custom_website_name": profile.custom_website_name,
+        }
+    response = JSONResponse(content={"message": "Login successful", "user": user_payload})
     response.set_cookie(key="access_token", value=access_token, httponly=True)
     return response
 
@@ -187,7 +211,14 @@ async def get_current_user_api(user: models.User = Depends(auth.get_current_user
                     "first_name": profile.first_name if profile else None,
                     "last_name": profile.last_name if profile else None,
                     "chat_rate": profile.chat_rate if profile else None,
-                    "kommo_widget_installed": profile.kommo_widget_installed if profile else False
+                    "kommo_widget_installed": profile.kommo_widget_installed if profile else False,
+                    # AI settings
+                    "response_delay_seconds": profile.response_delay_seconds if profile else None,
+                    "ai_provider": profile.ai_provider if profile else None,
+                    # User customization
+                    "custom_logo_url": profile.custom_logo_url if profile else None,
+                    "custom_favicon_url": profile.custom_favicon_url if profile else None,
+                    "custom_website_name": profile.custom_website_name if profile else None,
                 } if profile else None
             }
         }

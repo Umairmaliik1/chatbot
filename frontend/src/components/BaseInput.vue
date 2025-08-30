@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-1">
-    <label v-if="label" :for="inputId" class="form-label">
+    <label v-if="label" :for="inputId" class="form-label dark:text-gray-300">
       {{ label }}
       <span v-if="required" class="text-error-500 ml-1">*</span>
     </label>
@@ -32,7 +32,7 @@
       {{ error }}
     </p>
     
-    <p v-if="hint && !error" class="text-sm text-gray-500">
+    <p v-if="hint && !error" class="text-sm text-gray-500 dark:text-gray-400">
       {{ hint }}
     </p>
   </div>

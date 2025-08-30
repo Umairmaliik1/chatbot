@@ -53,6 +53,15 @@ class UserProfile(Base):
     xelence_affiliateid = Column(String, nullable=True)
     chat_rate = Column(Float, nullable=True)
     
+    # AI settings
+    response_delay_seconds = Column(Integer, default=0)  # Response delay in seconds (0-40)
+    ai_provider = Column(String, default='gemini')  # 'gemini' or 'openai'
+    
+    # User customization
+    custom_logo_url = Column(String, nullable=True)
+    custom_favicon_url = Column(String, nullable=True)
+    custom_website_name = Column(String, nullable=True)
+    
     # Kommo chat integration fields
     kommo_widget_installed = Column(Boolean, default=False)
 

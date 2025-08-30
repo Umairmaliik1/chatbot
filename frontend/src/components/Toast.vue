@@ -9,7 +9,7 @@
   >
     <div v-if="isVisible" class="corporate-toast" :class="toastClasses">
       <!-- Progress bar -->
-      <div class="absolute top-0 left-0 h-1 w-full bg-black/5 rounded-t-xl overflow-hidden">
+      <div class="absolute top-0 left-0 h-1 w-full bg-black/5 dark:bg-white/10 rounded-t-xl overflow-hidden">
         <div 
           class="h-full progress-bar" 
           :class="progressClasses"
@@ -30,17 +30,17 @@
         <!-- Content -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
-            <h4 class="font-semibold text-gray-900 text-sm leading-5">{{ title }}</h4>
-            <span class="text-xs text-gray-400 font-medium">{{ timeAgo }}</span>
+            <h4 class="font-semibold text-gray-900 dark:text-white text-sm leading-5">{{ title }}</h4>
+            <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">{{ timeAgo }}</span>
           </div>
-          <p v-if="message" class="mt-1 text-sm text-gray-600 leading-5">{{ message }}</p>
+          <p v-if="message" class="mt-1 text-sm text-gray-600 dark:text-gray-300 leading-5">{{ message }}</p>
         </div>
         
         <!-- Close button -->
         <div class="flex-shrink-0">
           <button
             @click="close"
-            class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            class="flex items-center justify-center w-8 h-8 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
           >
             <span class="sr-only">Close</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,10 +113,10 @@ const iconClasses = computed(() => {
 
 const iconBgClasses = computed(() => {
   const typeClasses = {
-    success: 'bg-emerald-50 border border-emerald-100',
-    error: 'bg-red-50 border border-red-100',
-    warning: 'bg-amber-50 border border-amber-100',
-    info: 'bg-blue-50 border border-blue-100'
+    success: 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800',
+    error: 'bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800',
+    warning: 'bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800',
+    info: 'bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800'
   }
   return typeClasses[props.type]
 })

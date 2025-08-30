@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-      })
+      }) as any
       
       // Set user data from successful login response
       if (response.user) {
@@ -86,6 +86,12 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await apiService.authGet<{ user: User }>('/auth/me')
       user.value = response.user
+      
+      // Update document title based on custom website name
+      const profile = user.value?.profile as any
+      if (profile?.custom_website_name) {
+        document.title = `${profile.custom_website_name} Dashboard`
+      }
     } catch (err) {
       // User not authenticated
       user.value = null
@@ -100,6 +106,12 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await apiService.post<{ message: string; profile: UserProfile }>('/settings', data)
       if (user.value && response.profile) {
         user.value.profile = { ...(user.value.profile || {}), ...response.profile }
+        
+        // Update document title if website name was changed
+        const responseProfile = response.profile as any
+        if (responseProfile?.custom_website_name) {
+          document.title = `${responseProfile.custom_website_name} Dashboard`
+        }
       }
       return response
     } catch (err: any) {

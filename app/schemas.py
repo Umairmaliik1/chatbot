@@ -34,6 +34,15 @@ class UserProfileUpdate(BaseModel):
     chat_rate: Optional[float] = None
     new_password: Optional[str] = None
     confirm_password: Optional[str] = None
+    
+    # AI settings
+    response_delay_seconds: Optional[int] = None
+    ai_provider: Optional[str] = None
+    
+    # User customization
+    custom_logo_url: Optional[str] = None
+    custom_favicon_url: Optional[str] = None
+    custom_website_name: Optional[str] = None
 
 # --- Instruction & FAQ Schemas ---
 

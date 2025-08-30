@@ -4,8 +4,8 @@
     <div class="mb-8">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900">Analytics</h1>
-          <p class="mt-2 text-gray-600">Deep insights into your AI chatbot's performance and user engagement.</p>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Analytics</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">Deep insights into your AI chatbot's performance and user engagement.</p>
         </div>
         <div class="flex items-center space-x-4">
           <select 
@@ -41,16 +41,16 @@
       <!-- Usage Trends -->
       <BaseCard>
         <div class="card-header">
-          <h3 class="text-lg font-semibold text-gray-900">Usage Trends</h3>
-          <p class="text-sm text-gray-600 mt-1">Daily active users and session growth</p>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Usage Trends</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Daily active users and session growth</p>
         </div>
         <div class="card-body">
           <div class="h-80 flex items-center justify-center">
             <div v-if="isLoadingCharts" class="text-center">
               <div class="spinner w-8 h-8 mx-auto mb-4"></div>
-              <p class="text-sm text-gray-500">Loading chart data...</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Loading chart data...</p>
             </div>
-            <div v-else class="text-center text-gray-500">
+            <div v-else class="text-center text-gray-500 dark:text-gray-400">
               <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
@@ -63,16 +63,16 @@
       <!-- Response Quality -->
       <BaseCard>
         <div class="card-header">
-          <h3 class="text-lg font-semibold text-gray-900">Response Quality</h3>
-          <p class="text-sm text-gray-600 mt-1">User satisfaction and response accuracy</p>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Response Quality</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">User satisfaction and response accuracy</p>
         </div>
         <div class="card-body">
           <div class="h-80 flex items-center justify-center">
             <div v-if="isLoadingCharts" class="text-center">
               <div class="spinner w-8 h-8 mx-auto mb-4"></div>
-              <p class="text-sm text-gray-500">Loading chart data...</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Loading chart data...</p>
             </div>
-            <div v-else class="text-center text-gray-500">
+            <div v-else class="text-center text-gray-500 dark:text-gray-400">
               <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -88,24 +88,24 @@
       <!-- Response Times -->
       <BaseCard>
         <div class="card-header">
-          <h3 class="text-lg font-semibold text-gray-900">Response Times</h3>
-          <p class="text-sm text-gray-600 mt-1">Average AI response time</p>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Response Times</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Average AI response time</p>
         </div>
         <div class="card-body">
           <div class="text-center">
             <div class="text-3xl font-bold text-primary-600 mb-2">2.3s</div>
-            <div class="text-sm text-gray-500 mb-4">Average response time</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">Average response time</div>
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Fast (&lt;1s)</span>
+                <span class="text-gray-600 dark:text-gray-400">Fast (&lt;1s)</span>
                 <span class="text-success-600">45%</span>
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Normal (1-3s)</span>
+                <span class="text-gray-600 dark:text-gray-400">Normal (1-3s)</span>
                 <span class="text-primary-600">40%</span>
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Slow (&gt;3s)</span>
+                <span class="text-gray-600 dark:text-gray-400">Slow (&gt;3s)</span>
                 <span class="text-warning-600">15%</span>
               </div>
             </div>
@@ -116,26 +116,26 @@
       <!-- User Engagement -->
       <BaseCard>
         <div class="card-header">
-          <h3 class="text-lg font-semibold text-gray-900">User Engagement</h3>
-          <p class="text-sm text-gray-600 mt-1">Session duration and interaction depth</p>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">User Engagement</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Session duration and interaction depth</p>
         </div>
         <div class="card-body">
           <div class="space-y-4">
             <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Avg Session Duration</span>
-              <span class="text-sm font-medium text-gray-900">4m 32s</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Avg Session Duration</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">4m 32s</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Messages per Session</span>
-              <span class="text-sm font-medium text-gray-900">6.8</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Messages per Session</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">6.8</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Return Rate</span>
-              <span class="text-sm font-medium text-gray-900">23%</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Return Rate</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">23%</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-600">Completion Rate</span>
-              <span class="text-sm font-medium text-gray-900">78%</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Completion Rate</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">78%</span>
             </div>
           </div>
         </div>
@@ -144,17 +144,17 @@
       <!-- Top Topics -->
       <BaseCard>
         <div class="card-header">
-          <h3 class="text-lg font-semibold text-gray-900">Top Topics</h3>
-          <p class="text-sm text-gray-600 mt-1">Most discussed topics</p>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Top Topics</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Most discussed topics</p>
         </div>
         <div class="card-body">
           <div class="space-y-3">
             <div v-for="topic in topTopics" :key="topic.name" class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <div class="w-2 h-2 rounded-full" :class="topic.color"></div>
-                <span class="text-sm text-gray-900">{{ topic.name }}</span>
+                <span class="text-sm text-gray-900 dark:text-white">{{ topic.name }}</span>
               </div>
-              <span class="text-sm font-medium text-gray-900">{{ topic.percentage }}%</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">{{ topic.percentage }}%</span>
             </div>
           </div>
         </div>
@@ -166,8 +166,8 @@
       <div class="card-header">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">Daily Analytics</h3>
-            <p class="text-sm text-gray-600 mt-1">Detailed breakdown by day</p>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Daily Analytics</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Detailed breakdown by day</p>
           </div>
           <div class="flex items-center space-x-4">
             <BaseInput
@@ -197,43 +197,43 @@
               <td colspan="6" class="table-cell text-center py-8">
                 <div class="flex items-center justify-center space-x-2">
                   <div class="spinner w-5 h-5"></div>
-                  <span class="text-sm text-gray-500">Loading analytics...</span>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">Loading analytics...</span>
                 </div>
               </td>
             </tr>
             <tr v-else v-for="day in dailyAnalytics" :key="day.date" class="table-row">
               <td class="table-cell">
-                <div class="text-sm font-medium text-gray-900">{{ formatDate(day.date) }}</div>
-                <div class="text-sm text-gray-500">{{ formatDayOfWeek(day.date) }}</div>
+                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ formatDate(day.date) }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatDayOfWeek(day.date) }}</div>
               </td>
               <td class="table-cell">
-                <div class="text-sm text-gray-900">{{ day.sessions.toLocaleString() }}</div>
+                <div class="text-sm text-gray-900 dark:text-white">{{ day.sessions.toLocaleString() }}</div>
                 <div class="text-sm" :class="day.sessions_growth > 0 ? 'text-success-500' : 'text-error-500'">
                   {{ day.sessions_growth > 0 ? '+' : '' }}{{ day.sessions_growth }}%
                 </div>
               </td>
               <td class="table-cell">
-                <div class="text-sm text-gray-900">{{ day.users.toLocaleString() }}</div>
+                <div class="text-sm text-gray-900 dark:text-white">{{ day.users.toLocaleString() }}</div>
                 <div class="text-sm" :class="day.users_growth > 0 ? 'text-success-500' : 'text-error-500'">
                   {{ day.users_growth > 0 ? '+' : '' }}{{ day.users_growth }}%
                 </div>
               </td>
               <td class="table-cell">
-                <div class="text-sm text-gray-900">{{ day.messages.toLocaleString() }}</div>
+                <div class="text-sm text-gray-900 dark:text-white">{{ day.messages.toLocaleString() }}</div>
                 <div class="text-sm" :class="day.messages_growth > 0 ? 'text-success-500' : 'text-error-500'">
                   {{ day.messages_growth > 0 ? '+' : '' }}{{ day.messages_growth }}%
                 </div>
               </td>
               <td class="table-cell">
-                <div class="text-sm text-gray-900">{{ day.avg_response_time }}s</div>
+                <div class="text-sm text-gray-900 dark:text-white">{{ day.avg_response_time }}s</div>
                 <div class="text-sm" :class="day.response_time_trend < 0 ? 'text-success-500' : 'text-error-500'">
                   {{ day.response_time_trend > 0 ? '+' : '' }}{{ day.response_time_trend }}%
                 </div>
               </td>
               <td class="table-cell">
                 <div class="flex items-center">
-                  <div class="text-sm text-gray-900 mr-2">{{ day.satisfaction }}%</div>
-                  <div class="w-16 bg-gray-200 rounded-full h-2">
+                  <div class="text-sm text-gray-900 dark:text-white mr-2">{{ day.satisfaction }}%</div>
+                  <div class="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div 
                       class="h-2 rounded-full" 
                       :class="getSatisfactionColor(day.satisfaction)"

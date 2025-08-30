@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
+import os
+import time
 
 from .. import models, auth, hashing
 from ..database import get_db
@@ -19,8 +21,12 @@ async def update_user_settings(
     """
     Updates the user's profile information and password.
     """
-    # Eagerly load the profile to ensure it's available
-    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).one()
+    # Get or create the user profile
+    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
+    if not profile:
+        profile = models.UserProfile(user_id=user.id)
+        db.add(profile)
+        db.flush()  # Ensure the profile gets an ID
 
     # Dynamically update profile fields from the request data, excluding password fields.
     update_data = settings_data.model_dump(exclude_unset=True, exclude={'new_password', 'confirm_password'})
@@ -45,9 +51,76 @@ async def update_user_settings(
         "xelence_x_api_key": profile.xelence_x_api_key,
         "xelence_affiliateid": profile.xelence_affiliateid,
         "chat_rate": profile.chat_rate,
+        # AI settings
+        "response_delay_seconds": profile.response_delay_seconds,
+        "ai_provider": profile.ai_provider,
+        # User customization
+        "custom_logo_url": profile.custom_logo_url,
+        "custom_favicon_url": profile.custom_favicon_url,
+        "custom_website_name": profile.custom_website_name,
     }
 
     return {
         "message": "Settings updated successfully.",
         "profile": profile_data,
+    }
+
+
+@router.post("/settings/favicon", status_code=200)
+async def upload_favicon(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    user: models.User = Depends(auth.get_current_user_for_api)
+):
+    """
+    Upload and set a user's favicon.ico.
+    Validates file type, size, and ICO header. Saves to static/uploads per user.
+    """
+    # Validate content type and filename extension (best-effort)
+    allowed_content_types = {"image/x-icon", "image/vnd.microsoft.icon", "application/octet-stream"}
+    if (file.content_type not in allowed_content_types) and (not file.filename.lower().endswith(".ico")):
+        raise HTTPException(status_code=400, detail="Only .ico favicon files are allowed.")
+
+    # Read file bytes and validate size and ICO magic
+    MAX_SIZE = 512 * 1024  # 512 KB
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="Empty file uploaded.")
+    if len(content) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Favicon too large. Max size is 512 KB.")
+    # ICO magic header 00 00 01 00
+    if len(content) < 4 or content[0:4] != b"\x00\x00\x01\x00":
+        raise HTTPException(status_code=400, detail="Invalid ICO file.")
+
+    # Ensure user upload directory exists under static/uploads
+    user_dir = os.path.join("static", "uploads", f"user_{user.id}")
+    os.makedirs(user_dir, exist_ok=True)
+
+    # Save as favicon.ico (overwrite if exists)
+    save_path = os.path.join(user_dir, "favicon.ico")
+    try:
+        with open(save_path, "wb") as f:
+            f.write(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save favicon: {e}")
+
+    # Update user's profile with cache-busted URL
+    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
+    if not profile:
+        profile = models.UserProfile(user_id=user.id)
+        db.add(profile)
+        db.flush()
+
+    ts = int(time.time())
+    public_url = f"/static/uploads/user_{user.id}/favicon.ico?v={ts}"
+    profile.custom_favicon_url = public_url
+    db.commit()
+    db.refresh(profile)
+
+    return {
+        "message": "Favicon uploaded successfully.",
+        "url": public_url,
+        "profile": {
+            "custom_favicon_url": profile.custom_favicon_url
+        }
     }

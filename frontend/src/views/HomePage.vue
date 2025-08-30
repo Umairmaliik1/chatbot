@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white">
+  <div class="min-h-screen bg-white dark:bg-gray-900">
     <!-- Header -->
     <header class="main-header">
       <div class="container">
@@ -26,7 +26,7 @@
       <section class="hero-section">
         <div class="container">
           <h1>Create Your Own AI Assistant</h1>
-          <p class="subtitle">Build a custom AI chatbot powered by Google's Gemini API. Integrate with your tools and automate your customer support.</p>
+          <p class="subtitle">Build a custom AI chatbot powered by advanced AI technology. Integrate with your tools and automate your customer support.</p>
           <router-link to="/signup" class="btn btn-primary btn-large">Get Started for Free</router-link>
           <p class="sub-cta">No credit card required. Start chatting in minutes.</p>
         </div>
@@ -80,7 +80,7 @@ const ShieldCheckIcon = 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11
 const features = [
   {
     title: 'AI-Powered',
-    description: 'Powered by Google\'s Gemini AI for intelligent, context-aware responses to your questions and support needs.',
+    description: 'Powered by advanced AI technology for intelligent, context-aware responses to your questions and support needs.',
     icon: CpuChipIcon
   },
   {

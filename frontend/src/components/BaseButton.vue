@@ -50,7 +50,7 @@ const buttonClasses = computed(() => {
     success: 'btn-success',
     warning: 'btn-warning',
     error: 'btn-error',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500'
+    ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500'
   }
   
   const sizeClasses = {

@@ -1,0 +1,172 @@
+1	<template>
+2	  <div class="min-h-screen bg-gray-50">
+3	    <!-- Sidebar -->
+4	    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg border-r border-gray-200 lg:translate-x-0 transform transition-transform duration-300 ease-in-out" :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
+5	      <div class="flex flex-col h-full">
+6	        <!-- Logo -->
+7	        <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+8	          <div class="flex items-center space-x-3">
+9	            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+10	              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+11	                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+12	              </svg>
+13	            </div>
+14	            <span class="text-xl font-bold text-gray-900">{{ websiteName }}</span>
+15	          </div>
+16	          <button @click="toggleSidebar" class="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+17	            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+18	              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+19	            </svg>
+20	          </button>
+21	        </div>
+22	
+23	        <!-- Navigation -->
+24	        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+25	          <router-link
+26	            v-for="item in navigationItems"
+27	            :key="item.name"
+28	            :to="item.href"
+29	            class="nav-item group"
+30	            :class="isActiveRoute(item.href) ? 'nav-item-active' : 'nav-item-inactive'"
+31	          >
+32	            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+33	              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
+34	            </svg>
+35	            <span>{{ item.name }}</span>
+36	            <span v-if="item.badge" class="ml-auto bg-primary-100 text-primary-600 text-xs font-medium px-2 py-0.5 rounded-full">
+37	              {{ item.badge }}
+38	            </span>
+39	          </router-link>
+40	        </nav>
+41	
+42	        <!-- User Section -->
+43	        <div class="border-t border-gray-200 p-4">
+44	          <div class="flex items-center space-x-3">
+45	            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+46	              <span class="text-sm font-medium text-primary-700">
+47	                {{ userInitials }}
+48	              </span>
+49	            </div>
+50	            <div class="flex-1 min-w-0">
+51	              <p class="text-sm font-medium text-gray-900 truncate">
+52	                {{ authStore.user?.username }}
+53	              </p>
+54	              <p class="text-xs text-gray-500 truncate">
+55	                {{ authStore.user?.email }}
+56	              </p>
+57	            </div>
+58	            <button @click="handleLogout" class="p-1 text-gray-400 hover:text-gray-600">
+59	              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+60	                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+61	              </svg>
+62	            </button>
+63	          </div>
+64	        </div>
+65	      </div>
+66	    </div>
+67	
+68	    <!-- Mobile sidebar overlay -->
+69	    <div v-if="sidebarOpen" class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden" @click="closeSidebar"></div>
+70	
+71	    <!-- Main content -->
+72	    <div class="lg:pl-64">
+73	      <!-- Top bar -->
+74	      <div class="sticky top-0 z-40 bg-white border-b border-gray-200 lg:hidden">
+75	        <div class="flex items-center justify-between h-16 px-4">
+76	          <button @click="toggleSidebar" class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+77	            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+78	              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+79	            </svg>
+80	          </button>
+81	          <div class="flex items-center space-x-3">
+82	            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+83	              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+84	                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+85	              </svg>
+86	            </div>
+87	            <span class="text-lg font-bold text-gray-900">{{ websiteName }}</span>
+88	          </div>
+89	          <div class="w-8"></div>
+90	        </div>
+91	      </div>
+92	
+93	      <!-- Page content -->
+94	      <main class="flex-1">
+95	        <div class="py-6">
+96	          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+97	            <slot />
+98	          </div>
+99	        </div>
+100	      </main>
+101	    </div>
+102	  </div>
+103	</template>
+104	
+105	<script setup lang="ts">
+106	import { ref, computed } from 'vue'
+107	import { useRoute, useRouter } from 'vue-router'
+108	import { useAuthStore } from '@/stores/auth'
+109	// Using simple SVG icons instead of Heroicons
+110	const HomeIcon = 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
+111	const ChartBarIcon = 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
+112	const DocumentTextIcon = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+113	const Cog6ToothIcon = 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+114	const WrenchScrewdriverIcon = 'M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655-5.653a2.548 2.548 0 010-3.586l.293-.293a2.548 2.548 0 013.586 0l5.653 4.655M8.5 11.5l2.5-2.5m-5 5l2.5-2.5m5 5l2.5-2.5'
+115	const PuzzlePieceIcon = 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a1 1 0 01-1-1V9a1 1 0 011-1h1a2 2 0 100-4H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1v-1z'
+116	const ClipboardDocumentListIcon = 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01'
+117	
+118	const route = useRoute()
+119	const router = useRouter()
+120	const authStore = useAuthStore()
+121	
+122	const sidebarOpen = ref(false)
+123	
+124	interface NavigationItem {
+125	  name: string
+126	  href: string
+127	  icon: string
+128	  badge?: string
+129	}
+130	
+131	const navigationItems: NavigationItem[] = [
+132	  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+133	  { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
+134	  { name: 'Reports', href: '/reports', icon: ClipboardDocumentListIcon },
+135	  { name: 'Instructions', href: '/instructions', icon: DocumentTextIcon },
+136	  { name: 'Test Chat', href: '/test-chat', icon: WrenchScrewdriverIcon },
+137	  { name: 'Kommo Integration', href: '/kommo', icon: PuzzlePieceIcon },
+138	  { name: 'Settings', href: '/settings', icon: Cog6ToothIcon }
+139	]
+140	
+141	const websiteName = computed(() => {
+142	  const p: any = authStore.user?.profile
+143	  const n = p?.custom_website_name ?? p?.customWebsiteName
+144	  return typeof n === 'string' && n.trim() ? n.trim() : 'AI Chatbot'
+145	})
+146	
+147	const userInitials = computed(() => {
+148	  if (!authStore.user?.username) return 'U'
+149	  return authStore.user.username.charAt(0).toUpperCase()
+150	})
+151	
+152	const isActiveRoute = (href: string) => {
+153	  return route.path === href
+154	}
+155	
+156	const toggleSidebar = () => {
+157	  sidebarOpen.value = !sidebarOpen.value
+158	}
+159	
+160	const closeSidebar = () => {
+161	  sidebarOpen.value = false
+162	}
+163	
+164	const handleLogout = async () => {
+165	  try {
+166	    await authStore.logout()
+167	    router.push('/login')
+168	  } catch (error) {
+169	    console.error('Logout error:', error)
+170	  }
+171	}
+172	</script>

@@ -1,0 +1,236 @@
+1	import secrets
+2	from fastapi import APIRouter, Request, Depends, Form
+3	from datetime import timedelta
+4	from fastapi.responses import HTMLResponse, RedirectResponse
+5	from sqlalchemy.orm import Session
+6	from typing import Optional
+7	from .. import models, hashing, auth
+8	from ..database import get_db
+9	
+10	router = APIRouter()
+11	
+12	@router.get("/login", response_class=HTMLResponse)
+13	async def login_page(request: Request, message: Optional[str] = None):
+14	    """Renders the login page - now handled by Vue.js frontend."""
+15	    from fastapi.responses import FileResponse
+16	    return FileResponse("static/dist/index.html")
+17	
+18	@router.post("/login")
+19	async def handle_login(
+20	    request: Request,
+21	    username: str = Form(...),
+22	    password: str = Form(...),
+23	    remember_me: Optional[str] = Form(None),
+24	    db: Session = Depends(get_db)
+25	):
+26	    # The form uses 'username', so we query by username.
+27	    user = db.query(models.User).filter(models.User.username == username).first()
+28	
+29	    if not user or not hashing.Hash.verify(user.hashed_password, password):
+30	        # On error, re-render the login page with an error message.
+31	        from fastapi import HTTPException
+32	        raise HTTPException(status_code=401, detail="Invalid username or password")
+33	
+34	    # The JWT 'sub' (subject) should still be the username for consistency with auth logic.
+35	    expires_delta = None
+36	    if remember_me:
+37	        # Set a longer expiration for "Remember Me", e.g., 30 days
+38	        expires_delta = timedelta(days=30)
+39	
+40	    access_token = auth.create_access_token(data={"sub": user.username}, expires_delta=expires_delta)
+41	    
+42	    # Return redirect for HTML form submissions
+43	    response = RedirectResponse(url="/dashboard", status_code=302)
+44	    # Add headers to prevent the browser from caching this redirect
+45	    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+46	    response.headers["Pragma"] = "no-cache"
+47	    response.headers["Expires"] = "0"
+48	    response.set_cookie(key="access_token", value=access_token, httponly=True)
+49	    return response
+50	
+51	@router.post("/api/login")
+52	async def handle_login_api(
+53	    request: Request,
+54	    username: str = Form(...),
+55	    password: str = Form(...),
+56	    remember_me: Optional[str] = Form(None),
+57	    db: Session = Depends(get_db)
+58	):
+59	    """API endpoint for Vue.js frontend login."""
+60	    # The form uses 'username', so we query by username.
+61	    user = db.query(models.User).filter(models.User.username == username).first()
+62	
+63	    if not user or not hashing.Hash.verify(user.hashed_password, password):
+64	        from fastapi import HTTPException
+65	        raise HTTPException(status_code=401, detail="Invalid username or password")
+66	
+67	    # The JWT 'sub' (subject) should still be the username for consistency with auth logic.
+68	    expires_delta = None
+69	    if remember_me:
+70	        # Set a longer expiration for "Remember Me", e.g., 30 days
+71	        expires_delta = timedelta(days=30)
+72	
+73	    access_token = auth.create_access_token(data={"sub": user.username}, expires_delta=expires_delta)
+74	    
+75	    # Return JSON response for API calls with full user + profile so frontend can render immediately
+76	    from fastapi.responses import JSONResponse
+77	    # Ensure profile is loaded
+78	    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
+79	    user_payload = {
+80	        "id": user.id,
+81	        "username": user.username,
+82	        "email": user.email,
+83	        "kommo_integration_key": user.kommo_integration_key,
+84	    }
+85	    if profile:
+86	        user_payload["profile"] = {
+87	            "xelence_affiliateid": profile.xelence_affiliateid,
+88	            "xelence_x_api_key": profile.xelence_x_api_key,
+89	            "first_name": profile.first_name,
+90	            "last_name": profile.last_name,
+91	            "chat_rate": profile.chat_rate,
+92	            "kommo_widget_installed": profile.kommo_widget_installed,
+93	            # AI settings
+94	            "response_delay_seconds": profile.response_delay_seconds,
+95	            "ai_provider": profile.ai_provider,
+96	            # User customization
+97	            "custom_logo_url": profile.custom_logo_url,
+98	            "custom_favicon_url": profile.custom_favicon_url,
+99	            "custom_website_name": profile.custom_website_name,
+100	        }
+101	    response = JSONResponse(content={"message": "Login successful", "user": user_payload})
+102	    response.set_cookie(key="access_token", value=access_token, httponly=True)
+103	    return response
+104	
+105	@router.get("/logout", status_code=302)
+106	async def logout():
+107	    response = RedirectResponse(url="/login")
+108	    response.delete_cookie(key="access_token")
+109	    return response
+110	
+111	@router.get("/forgot-password", response_class=HTMLResponse)
+112	async def forgot_password_page(request: Request, error: Optional[str] = None):
+113	     """Renders the forgot password page - now handled by Vue.js frontend."""
+114	     from fastapi.responses import FileResponse
+115	     return FileResponse("static/dist/index.html")
+116	
+117	@router.post("/forgot-password")
+118	async def handle_forgot_password(request: Request, username: str = Form(...), db: Session = Depends(get_db)):
+119	    """Handles the forgot password request."""
+120	    #Basic implementation.  A real implementation would email a reset link.
+121	    from fastapi.responses import JSONResponse
+122	    return JSONResponse(content={"message": "Password reset email sent (not really)."})
+123	
+124	@router.get("/signup", response_class=HTMLResponse)
+125	async def signup_page(request: Request):
+126	    """Renders the user signup page - now handled by Vue.js frontend."""
+127	    from fastapi.responses import FileResponse
+128	    return FileResponse("static/dist/index.html")
+129	
+130	@router.post("/signup")
+131	async def handle_signup(
+132	    request: Request,
+133	    username: str = Form(...),
+134	    password: str = Form(...),
+135	    confirm_password: str = Form(...),
+136	    db: Session = Depends(get_db)
+137	):
+138	    """Handles user registration."""
+139	    from fastapi import HTTPException
+140	    
+141	    if db.query(models.User).filter(models.User.username == username).first():
+142	        raise HTTPException(status_code=400, detail="Username already exists.")
+143	
+144	    if password != confirm_password:
+145	        raise HTTPException(status_code=400, detail="Passwords do not match.")
+146	
+147	    if len(password) < 8:
+148	        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long.")
+149	
+150	    new_user = models.User(
+151	        username=username,
+152	        hashed_password=hashing.Hash.bcrypt(password),
+153	        kommo_integration_key=secrets.token_urlsafe(9),
+154	        profile=models.UserProfile()
+155	    )
+156	    db.add(new_user)
+157	    db.commit()
+158	
+159	    # Redirect to login page with a success message
+160	    return RedirectResponse(url="/login?message=Signup successful! Please log in.", status_code=302)
+161	
+162	@router.post("/api/signup")
+163	async def handle_signup_api(
+164	    request: Request,
+165	    username: str = Form(...),
+166	    password: str = Form(...),
+167	    confirm_password: str = Form(...),
+168	    db: Session = Depends(get_db)
+169	):
+170	    """API endpoint for Vue.js frontend signup."""
+171	    from fastapi import HTTPException
+172	    from fastapi.responses import JSONResponse
+173	    
+174	    if db.query(models.User).filter(models.User.username == username).first():
+175	        raise HTTPException(status_code=400, detail="Username already exists.")
+176	
+177	    if password != confirm_password:
+178	        raise HTTPException(status_code=400, detail="Passwords do not match.")
+179	
+180	    if len(password) < 8:
+181	        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long.")
+182	
+183	    new_user = models.User(
+184	        username=username,
+185	        hashed_password=hashing.Hash.bcrypt(password),
+186	        kommo_integration_key=secrets.token_urlsafe(9),
+187	        profile=models.UserProfile()
+188	    )
+189	    db.add(new_user)
+190	    db.commit()
+191	
+192	    # Return JSON response for API calls
+193	    return JSONResponse(content={"message": "Signup successful! Please log in.", "user": {"id": new_user.id, "username": new_user.username}})
+194	
+195	@router.get("/auth/me")
+196	async def get_current_user_api(user: models.User = Depends(auth.get_current_user_for_api), db: Session = Depends(get_db)):
+197	    """API endpoint to get the current authenticated user."""
+198	    try:
+199	        # Load the user profile to get Xelence credentials
+200	        profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
+201	        
+202	        return {
+203	            "user": {
+204	                "id": user.id,
+205	                "username": user.username,
+206	                "email": user.email,
+207	                "kommo_integration_key": user.kommo_integration_key,
+208	                "profile": {
+209	                    "xelence_affiliateid": profile.xelence_affiliateid if profile else None,
+210	                    "xelence_x_api_key": profile.xelence_x_api_key if profile else None,
+211	                    "first_name": profile.first_name if profile else None,
+212	                    "last_name": profile.last_name if profile else None,
+213	                    "chat_rate": profile.chat_rate if profile else None,
+214	                    "kommo_widget_installed": profile.kommo_widget_installed if profile else False,
+215	                    # AI settings
+216	                    "response_delay_seconds": profile.response_delay_seconds if profile else None,
+217	                    "ai_provider": profile.ai_provider if profile else None,
+218	                    # User customization
+219	                    "custom_logo_url": profile.custom_logo_url if profile else None,
+220	                    "custom_favicon_url": profile.custom_favicon_url if profile else None,
+221	                    "custom_website_name": profile.custom_website_name if profile else None,
+222	                } if profile else None
+223	            }
+224	        }
+225	    except Exception as e:
+226	        # Log the error and return a basic user object without profile
+227	        print(f"Error in /auth/me endpoint: {e}")
+228	        return {
+229	            "user": {
+230	                "id": user.id,
+231	                "username": user.username,
+232	                "email": user.email,
+233	                "kommo_integration_key": user.kommo_integration_key,
+234	                "profile": None
+235	            }
+236	        }

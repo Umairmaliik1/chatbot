@@ -17,3 +17,5 @@ PyPDF2                    # For PDF parsing
 pdfplumber                # Alternative PDF parser
 langchain                 # Core LangChain functionality
 langchain-google-genai    # Google Gemini integration for LangChain
+langchain-openai          # OpenAI integration for LangChain
+openai                    # OpenAI API client

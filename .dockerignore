@@ -1,25 +1,84 @@
 # Git
 .git
 .gitignore
+.gitattributes
 
-# Docker
-Dockerfile
-docker-compose.yml
-docker_compose.yaml
-.dockerignore
+# Documentation
+README.md
+*.md
 
-# Python virtual environment
-.venv/
-venv/
+# Environment files
+.env
+.env.local
+.env.*.local
 
-# Python cache
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+env/
 
-# Local data - mounted via volumes, not copied into the image
-data/
-
-# IDE / OS files
-.idea/
+# IDEs
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Frontend development
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Static files (will be built in container)
+static/dist/
+
+# Database (will be mounted as volume)
+*.db
+*.sqlite
+*.sqlite3
+
+# Kommo Widget (not needed in container)
+Kommo_Widget/
+
+# Widgets (not needed in container)
+widgets/

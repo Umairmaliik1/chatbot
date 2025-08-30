@@ -2,12 +2,12 @@
   <BaseCard class="relative overflow-hidden">
     <div class="flex items-center justify-between">
       <div class="flex-1">
-        <p class="text-sm font-medium text-gray-600 mb-1">{{ title }}</p>
+        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{{ title }}</p>
         <div class="flex items-baseline">
-          <p v-if="loading" class="text-2xl font-semibold text-gray-300">
+          <p v-if="loading" class="text-2xl font-semibold text-gray-300 dark:text-gray-600">
             <div class="skeleton h-8 w-16"></div>
           </p>
-          <p v-else class="text-2xl font-semibold text-gray-900">{{ formattedValue }}</p>
+          <p v-else class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formattedValue }}</p>
           <div v-if="trend" class="ml-2 flex items-baseline text-sm font-semibold" :class="trendClass">
             <svg class="self-center flex-shrink-0 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="trendIcon" />
@@ -16,7 +16,7 @@
             {{ Math.abs(trend) }}%
           </div>
         </div>
-        <p v-if="!loading" class="text-sm text-gray-500 mt-1">{{ period }}</p>
+        <p v-if="!loading" class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ period }}</p>
       </div>
       <div class="flex-shrink-0">
         <div class="w-12 h-12 rounded-lg flex items-center justify-center" :class="iconBgClass">
@@ -28,7 +28,7 @@
     </div>
     
     <!-- Loading overlay -->
-    <div v-if="loading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
+    <div v-if="loading" class="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-75 dark:bg-opacity-75 flex items-center justify-center">
       <div class="spinner w-6 h-6"></div>
     </div>
   </BaseCard>
@@ -36,7 +36,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Component } from 'vue'
 import BaseCard from './BaseCard.vue'
 // Using simple SVG icons instead of Heroicons
 const ArrowUpIcon = 'M5 10l7-7m0 0l7 7m-7-7v18'
@@ -79,16 +78,16 @@ const trendIcon = computed(() => {
 })
 
 const iconBgClass = computed(() => {
-  // Generate consistent background color based on icon
+  // Generate consistent background color based on icon with dark mode support
   const colors = [
-    'bg-primary-100',
-    'bg-success-100', 
-    'bg-warning-100',
-    'bg-error-100',
-    'bg-purple-100',
-    'bg-indigo-100',
-    'bg-pink-100',
-    'bg-blue-100'
+    'bg-primary-100 dark:bg-primary-800',
+    'bg-success-100 dark:bg-success-800', 
+    'bg-warning-100 dark:bg-warning-800',
+    'bg-error-100 dark:bg-error-800',
+    'bg-purple-100 dark:bg-purple-800',
+    'bg-indigo-100 dark:bg-indigo-800',
+    'bg-pink-100 dark:bg-pink-800',
+    'bg-blue-100 dark:bg-blue-800'
   ]
   
   // Simple hash function to get consistent color
@@ -102,14 +101,14 @@ const iconBgClass = computed(() => {
 
 const iconClass = computed(() => {
   const bgClass = iconBgClass.value
-  if (bgClass.includes('primary')) return 'text-primary-600'
-  if (bgClass.includes('success')) return 'text-success-600'
-  if (bgClass.includes('warning')) return 'text-warning-600'
-  if (bgClass.includes('error')) return 'text-error-600'
-  if (bgClass.includes('purple')) return 'text-purple-600'
-  if (bgClass.includes('indigo')) return 'text-indigo-600'
-  if (bgClass.includes('pink')) return 'text-pink-600'
-  if (bgClass.includes('blue')) return 'text-blue-600'
-  return 'text-gray-600'
+  if (bgClass.includes('primary')) return 'text-primary-600 dark:text-primary-300'
+  if (bgClass.includes('success')) return 'text-success-600 dark:text-success-300'
+  if (bgClass.includes('warning')) return 'text-warning-600 dark:text-warning-300'
+  if (bgClass.includes('error')) return 'text-error-600 dark:text-error-300'
+  if (bgClass.includes('purple')) return 'text-purple-600 dark:text-purple-300'
+  if (bgClass.includes('indigo')) return 'text-indigo-600 dark:text-indigo-300'
+  if (bgClass.includes('pink')) return 'text-pink-600 dark:text-pink-300'
+  if (bgClass.includes('blue')) return 'text-blue-600 dark:text-blue-300'
+  return 'text-gray-600 dark:text-gray-300'
 })
 </script>

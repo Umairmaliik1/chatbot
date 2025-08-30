@@ -1,9 +1,9 @@
 <template>
   <BaseLayout>
     <!-- Modern Top Navigation Bar -->
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm mb-6 overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm mb-6 overflow-hidden">
       <!-- Header Bar -->
-      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-gray-100">
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-gray-100 dark:border-gray-700">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-4">
             <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
@@ -12,8 +12,8 @@
               </svg>
             </div>
             <div>
-              <h1 class="text-xl font-bold text-gray-900">AI Chat Assistant</h1>
-              <p class="text-sm text-gray-600">Powered by Gemini AI</p>
+              <h1 class="text-xl font-bold text-gray-900 dark:text-white">AI Chat Assistant</h1>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Powered by AI Bot</p>
             </div>
           </div>
 
@@ -49,17 +49,17 @@
               <button 
                 ref="sessionBtnEl"
                 @click="toggleSessionDropdown"
-                class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                class="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 :class="showSessionDropdown ? 'ring-2 ring-indigo-500 border-indigo-500' : ''"
               >
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <span class="text-sm font-medium text-gray-700 max-w-32 truncate">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-32 truncate">
                   {{ getCurrentSessionTitle() }}
                 </span>
                 <svg 
-                  class="w-4 h-4 text-gray-400 transition-transform duration-200" 
+                  class="w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200" 
                   :class="showSessionDropdown ? 'rotate-180' : ''"
                   fill="none" 
                   stroke="currentColor" 
@@ -84,25 +84,25 @@
                   class="session-dropdown fixed z-[9999] w-80"
                   :style="dropdownStyle"
                 >
-                  <div class="p-4 border-b border-gray-200 bg-gray-50">
+                  <div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                     <div class="flex items-center justify-between">
-                      <h3 class="font-semibold text-gray-900">Chat Sessions ({{ chatSessions.length }})</h3>
+                      <h3 class="font-semibold text-gray-900 dark:text-white">Chat Sessions ({{ chatSessions.length }})</h3>
                       <button @click="loadChatSessions" class="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Reload</button>
                     </div>
                   </div>
-                  <div class="bg-white" style="min-height: 200px; max-height: 400px; overflow-y: auto;">
+                  <div class="bg-white dark:bg-gray-800" style="min-height: 200px; max-height: 400px; overflow-y: auto;">
                     <!-- Session List -->
                     <div v-if="chatSessions && chatSessions.length > 0">
                       <div v-for="session in chatSessions" :key="session.id" 
-                          class="session-item p-4 hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors"
-                          :class="currentSessionId === session.id ? 'bg-indigo-50 border-l-4 border-l-indigo-500' : ''"
+                          class="session-item p-4 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors"
+                          :class="currentSessionId === session.id ? 'bg-indigo-50 dark:bg-indigo-900/30 border-l-4 border-l-indigo-500' : ''"
                           @click="selectSession(session.id)">
                         <div class="flex items-center justify-between">
                           <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-medium text-gray-900 truncate">
+                            <h4 class="text-sm font-medium text-gray-900 dark:text-white truncate">
                               {{ session.title || `Session ${session.id}` }}
                             </h4>
-                            <p class="text-xs text-gray-500 mt-1">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                               {{ formatDate(session.created_at) }}
                             </p>
                           </div>
@@ -150,7 +150,7 @@
             <button 
               v-if="currentSessionId && messages.length > 0"
               @click="clearChat"
-              class="text-xs text-gray-500 hover:text-red-600 transition-colors"
+              class="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
             >
               Clear Chat
             </button>
@@ -160,7 +160,7 @@
     </div>
 
     <!-- Main Chat Interface -->
-    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
       <!-- Messages Area -->
       <div 
         class="h-[calc(100vh-280px)] min-h-[500px] overflow-y-auto px-3 sm:px-6 py-4"
@@ -169,13 +169,13 @@
         <!-- Welcome State -->
         <div v-if="messages.length === 0" class="welcome-state">
           <div class="welcome-content">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">Ready to chat!</h3>
-            <p class="text-gray-500 text-sm max-w-md mx-auto">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Ready to chat!</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm max-w-md mx-auto">
               {{ currentSessionId 
                 ? 'Start a conversation by typing your message below.' 
                 : 'Create a new chat session to begin your AI conversation.' 
@@ -189,11 +189,11 @@
           <template v-for="(message, index) in messagesChrono" :key="message.id">
             <!-- Date divider -->
             <div v-if="shouldShowDateDivider(messagesChrono, index)" class="flex items-center my-6">
-              <div class="flex-1 h-px bg-gray-200"></div>
-              <div class="px-3 text-xs text-gray-500 uppercase tracking-wider">
+              <div class="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
+              <div class="px-3 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {{ formatDateDivider(new Date(message.timestamp)) }}
               </div>
-              <div class="flex-1 h-px bg-gray-200"></div>
+              <div class="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
             </div>
 
             <!-- Message bubble row -->
@@ -214,12 +214,12 @@
                     class="rounded-2xl px-4 py-2 text-[15px] leading-relaxed shadow-sm"
                     :class="message.role === 'user'
                       ? 'bg-indigo-600 text-white rounded-br-md'
-                      : 'bg-white border border-gray-200 text-gray-800 rounded-bl-md'"
+                      : 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-bl-md'"
                   >
                     {{ message.content }}
                   </div>
                   <div
-                    class="mt-1 text-[11px] text-gray-500"
+                    class="mt-1 text-[11px] text-gray-500 dark:text-gray-400"
                     :class="message.role === 'user' ? 'text-right pr-1' : 'text-left pl-1'"
                   >
                     {{ formatTime(message.timestamp) }}
@@ -247,14 +247,14 @@
                 </div>
               </div>
               <div class="max-w-[70%]">
-                <div class="rounded-2xl px-4 py-2 border border-gray-200 bg-white text-gray-800 rounded-bl-md">
+                <div class="rounded-2xl px-4 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-md">
                   <div class="typing-dots flex gap-1 items-center">
                     <span class="typing-dot"></span>
                     <span class="typing-dot"></span>
                     <span class="typing-dot"></span>
                   </div>
                 </div>
-                <div class="mt-1 text-[11px] text-gray-500 pl-1">Typing…</div>
+                <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400 pl-1">Typing…</div>
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@
       </div>
 
       <!-- Input Area -->
-      <div class="border-t border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100/50 p-6">
+      <div class="border-t border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-800 dark:to-gray-700/50 p-6">
         <form @submit.prevent="sendMessage" class="space-y-4">
           <!-- Main Input Row -->
           <div class="flex items-end space-x-4">
@@ -279,11 +279,11 @@
                 />
                 <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
                   <div class="flex items-center space-x-2">
-                    <span class="text-xs text-gray-400">
+                    <span class="text-xs text-gray-400 dark:text-gray-500">
                       {{ inputMessage.length }}
                     </span>
-                    <div class="w-px h-4 bg-gray-300"></div>
-                    <span class="text-xs text-gray-400">
+                    <div class="w-px h-4 bg-gray-300 dark:bg-gray-600"></div>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">
                       {{ currentSessionId ? '↵' : '!' }}
                     </span>
                   </div>
@@ -574,7 +574,7 @@ const startNewChat = async () => {
     
     // Clear messages and add welcome message (timestamped now)
     messages.value = []
-    addMessage('assistant', "Hello! I'm powered by Gemini AI. How can I help you today?", new Date())
+    addMessage('assistant', "Hello! I'm your AI Bot assistant. How can I help you today?", new Date())
     
     // Cancel any ongoing request
     if (abortController.value) {
@@ -741,6 +741,9 @@ onBeforeUnmount(() => {
 .typing-dots .typing-dot {
   width: 6px; height: 6px; border-radius: 9999px; background: #9CA3AF; animation: typing-bounce 1.2s infinite ease-in-out;
 }
+.dark .typing-dots .typing-dot {
+  background: #6B7280;
+}
 .typing-dots .typing-dot:nth-child(2) { animation-delay: .2s; }
 .typing-dots .typing-dot:nth-child(3) { animation-delay: .4s; }
 @keyframes typing-bounce {
@@ -763,7 +766,12 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(8px);
   animation: dropdownSlideIn 0.2s ease-out;
 }
+.dark .session-dropdown {
+  background: #374151;
+  border-color: #4b5563;
+}
 .session-item:hover { background: #f0f4ff !important; }
+.dark .session-item:hover { background: #4338ca40 !important; }
 @keyframes dropdownSlideIn {
   from { opacity: 0; transform: translateY(-10px) scale(0.95); }
   to { opacity: 1; transform: translateY(0) scale(1); }

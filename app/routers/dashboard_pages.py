@@ -34,12 +34,7 @@ def _get_template_context(request: Request, user: models.User, **kwargs):
     context.update(kwargs)
     return context
 
-@router.get("/", response_class=HTMLResponse, name="dashboard_home")
-async def dashboard_home(request: Request, user: models.User = Depends(auth.get_current_user_for_page)):
-    if isinstance(user, RedirectResponse):
-        return user
-    from fastapi.responses import FileResponse
-    return FileResponse("static/dist/index.html")
+
 
 @router.get("/chat", response_class=HTMLResponse, name="chat_history")
 async def chat_history_page(request: Request, user: models.User = Depends(auth.get_current_user_for_page)):

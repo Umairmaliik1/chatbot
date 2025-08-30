@@ -2,8 +2,8 @@
   <div :class="cardClasses">
     <div v-if="$slots.header || title" class="card-header">
       <slot name="header">
-        <h3 v-if="title" class="text-lg font-semibold text-gray-900">{{ title }}</h3>
-        <p v-if="subtitle" class="text-sm text-gray-600 mt-1">{{ subtitle }}</p>
+        <h3 v-if="title" class="text-lg font-semibold text-gray-900 dark:text-white">{{ title }}</h3>
+        <p v-if="subtitle" class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ subtitle }}</p>
       </slot>
     </div>
     
@@ -35,7 +35,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const cardClasses = computed(() => {
-  const baseClasses = 'bg-white rounded-xl'
+  const baseClasses = 'bg-white dark:bg-gray-800 rounded-xl'
   
   const paddingClasses = {
     none: '',
@@ -51,7 +51,7 @@ const cardClasses = computed(() => {
     lg: 'shadow-strong'
   }
   
-  const borderClasses = props.border ? 'border border-gray-200' : ''
+  const borderClasses = props.border ? 'border border-gray-200 dark:border-gray-700' : ''
   
   return [
     baseClasses,

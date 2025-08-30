@@ -7,7 +7,7 @@
           <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">
             Kommo Integration
           </h1>
-          <p class="text-gray-600 mt-2 text-lg">Connect your AI chatbot to Kommo CRM for seamless workflow automation</p>
+          <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Connect your AI chatbot to Kommo CRM for seamless workflow automation</p>
         </div>
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2 px-4 py-2 rounded-full border" 
@@ -27,7 +27,7 @@
       <!-- Left: Configuration Panel -->
       <div class="lg:col-span-2">
         <BaseCard class="overflow-hidden">
-          <div class="p-6 border-b border-gray-100">
+          <div class="p-6 border-b border-gray-100 dark:border-gray-700">
             <div class="flex items-start gap-4">
               <div class="flex items-center justify-center w-12 h-12 bg-blue-50 rounded-xl border border-blue-100">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,8 +36,8 @@
                 </svg>
               </div>
               <div>
-                <h3 class="text-xl font-semibold text-gray-900">Configuration</h3>
-                <p class="text-gray-600 mt-1">Enter your Kommo credentials to establish the connection</p>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Configuration</h3>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">Enter your Kommo credentials to establish the connection</p>
               </div>
             </div>
           </div>
@@ -46,7 +46,7 @@
             <!-- Form Fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-semibold text-gray-700">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Kommo Subdomain
                 </label>
                 <div class="relative">
@@ -61,11 +61,11 @@
                     </svg>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">Your Kommo account subdomain</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Your Kommo account subdomain</p>
               </div>
               
               <div class="space-y-2">
-                <label class="block text-sm font-semibold text-gray-700">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Access Token (API Key)
                 </label>
                 <div class="relative">
@@ -81,7 +81,7 @@
                     </svg>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">Long-lived token from Kommo</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Long-lived token from Kommo</p>
               </div>
             </div>
 
@@ -148,9 +148,9 @@
             
             <div class="space-y-4">
               <!-- Integration Key -->
-              <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                  <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Key</label>
+                  <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Key</label>
                   <BaseButton
                     variant="secondary"
                     size="sm"

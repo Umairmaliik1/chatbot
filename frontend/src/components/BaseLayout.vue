@@ -1,19 +1,20 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg border-r border-gray-200 lg:translate-x-0 transform transition-transform duration-300 ease-in-out" :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700 lg:translate-x-0 transform transition-transform duration-300 ease-in-out" :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
       <div class="flex flex-col h-full">
         <!-- Logo -->
-        <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+        <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-primary-600">
+              <img v-if="logoUrl" :src="logoUrl" alt="Logo" class="w-full h-full object-contain" />
+              <svg v-else class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <span class="text-xl font-bold text-gray-900">AI Chatbot</span>
+            <span class="text-xl font-bold text-gray-900 dark:text-white">{{ websiteName }}</span>
           </div>
-          <button @click="toggleSidebar" class="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+          <button @click="toggleSidebar" class="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -40,22 +41,22 @@
         </nav>
 
         <!-- User Section -->
-        <div class="border-t border-gray-200 p-4">
+        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
           <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-              <span class="text-sm font-medium text-primary-700">
+            <div class="w-8 h-8 bg-primary-100 dark:bg-primary-800 rounded-full flex items-center justify-center">
+              <span class="text-sm font-medium text-primary-700 dark:text-primary-300">
                 {{ userInitials }}
               </span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
+              <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
                 {{ authStore.user?.username }}
               </p>
-              <p class="text-xs text-gray-500 truncate">
+              <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
                 {{ authStore.user?.email }}
               </p>
             </div>
-            <button @click="handleLogout" class="p-1 text-gray-400 hover:text-gray-600">
+            <button @click="handleLogout" class="p-1 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
@@ -71,20 +72,21 @@
     <!-- Main content -->
     <div class="lg:pl-64">
       <!-- Top bar -->
-      <div class="sticky top-0 z-40 bg-white border-b border-gray-200 lg:hidden">
+      <div class="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 lg:hidden">
         <div class="flex items-center justify-between h-16 px-4">
-          <button @click="toggleSidebar" class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+          <button @click="toggleSidebar" class="p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
           <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-primary-600">
+              <img v-if="logoUrl" :src="logoUrl" alt="Logo" class="w-full h-full object-contain" />
+              <svg v-else class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <span class="text-lg font-bold text-gray-900">AI Chatbot</span>
+            <span class="text-lg font-bold text-gray-900 dark:text-white">{{ websiteName }}</span>
           </div>
           <div class="w-8"></div>
         </div>
@@ -121,7 +123,14 @@ const authStore = useAuthStore()
 
 const sidebarOpen = ref(false)
 
-const navigationItems = [
+interface NavigationItem {
+  name: string
+  href: string
+  icon: string
+  badge?: string
+}
+
+const navigationItems: NavigationItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Reports', href: '/reports', icon: ClipboardDocumentListIcon },
@@ -130,6 +139,18 @@ const navigationItems = [
   { name: 'Kommo Integration', href: '/kommo', icon: PuzzlePieceIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon }
 ]
+
+const websiteName = computed(() => {
+  const p: any = authStore.user?.profile
+  const n = p?.custom_website_name ?? p?.customWebsiteName
+  return typeof n === 'string' && n.trim() ? n.trim() : 'AI Chatbot'
+})
+
+const logoUrl = computed(() => {
+  const p: any = authStore.user?.profile
+  const url = p?.custom_logo_url ?? p?.customLogoUrl
+  return typeof url === 'string' && url.trim() ? url.trim() : ''
+})
 
 const userInitials = computed(() => {
   if (!authStore.user?.username) return 'U'

@@ -25,8 +25,16 @@ class _Settings:
     def access_token_expire_minutes(self) -> int:
         return int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
 
-    # --- Gemini API Configuration ---
-    # The Gemini API key should be set via GEMINI_API_KEY environment variable
+    # --- AI API Configuration ---
+    # API keys should be set via environment variables
+    @property
+    def gemini_api_key(self) -> str:
+        return os.getenv("GEMINI_API_KEY", "")
+    
+    @property
+    def openai_api_key(self) -> str:
+        return os.getenv("OPENAI_API_KEY", "")
+    
     # Model configuration for chat generation
     @property
     def max_tokens(self) -> int:

@@ -22,7 +22,7 @@
               <!-- Header -->
               <div v-if="title || $slots.header" class="modal-header">
                 <slot name="header">
-                  <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ title }}</h3>
                 </slot>
                 <button
                   v-if="closable"

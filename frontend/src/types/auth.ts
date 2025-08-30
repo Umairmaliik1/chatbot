@@ -31,6 +31,13 @@ export interface UserProfile {
   xelence_affiliateid?: string
   chat_rate?: number
   kommo_widget_installed?: boolean
+  // AI settings
+  response_delay_seconds?: number
+  ai_provider?: string
+  // User customization
+  custom_logo_url?: string
+  custom_favicon_url?: string
+  custom_website_name?: string
 }
 
 export interface UserProfileUpdate extends UserProfile {
