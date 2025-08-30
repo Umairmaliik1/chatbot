@@ -72,8 +72,9 @@ class ApiService {
         },
         (error) => {
           if (error.response?.status === 401) {
-            // Handle unauthorized access - only redirect if not already on login page
-            if (window.location.pathname !== '/login') {
+            // Handle unauthorized access - only redirect if not on public pages
+            const publicPaths = ['/login', '/signup', '/forgot-password', '/']
+            if (!publicPaths.includes(window.location.pathname)) {
               const authStore = useAuthStore()
               authStore.user = null // Clear user state directly
               window.location.href = '/login'
