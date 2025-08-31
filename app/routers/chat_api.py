@@ -12,6 +12,7 @@ import json
 from .. import models, auth
 from ..database import get_db
 from ..ai_client import get_ai_client  # Updated import
+from ..crypto import decrypt
 
 router = APIRouter()
 
@@ -77,14 +78,20 @@ async def chat_endpoint(
         db.commit()
         
         # Get user-specific instructions from the database
+        logging.info(f"🔍 Querying instructions for user_id: {user_id}")
         instruction_entry = db.query(models.UserInstruction).filter(
             models.UserInstruction.user_id == user_id
         ).first()
 
+        logging.info(f"🔍 Instruction query result: {instruction_entry}")
+        if instruction_entry:
+            logging.info(f"🔍 Instruction content: {instruction_entry.instructions}")
+
         if instruction_entry and instruction_entry.instructions:
             instructions = instruction_entry.instructions
+            logging.info(f"✅ Found user instructions for user {user_id}: {instructions[:100]}...")
         else:
-            logging.info("No user instructions found, using default prompt")
+            logging.warning(f"❌ No user instructions found for user {user_id}, using default prompt")
             instructions = "You are a helpful AI assistant."
         
         # Get chat history
@@ -98,19 +105,26 @@ async def chat_endpoint(
             for msg in history
         ]
         
-        # Get user's settings (response delay and AI provider)
+        # Get user's settings (response delay, AI provider, and provider keys)
         user_profile = db.query(models.UserProfile).filter(
             models.UserProfile.user_id == user_id
         ).first()
-        
+
         response_delay = 0
         ai_provider = "gemini"  # Default provider
-        
+        openai_key_override = None
+        gemini_key_override = None
+
         if user_profile:
             if user_profile.response_delay_seconds:
                 response_delay = user_profile.response_delay_seconds
             if user_profile.ai_provider:
                 ai_provider = user_profile.ai_provider
+            # Decrypt any stored per-user keys
+            if user_profile.openai_api_key_enc:
+                openai_key_override = decrypt(user_profile.openai_api_key_enc)
+            if user_profile.gemini_api_key_enc:
+                gemini_key_override = decrypt(user_profile.gemini_api_key_enc)
 
         # Create streaming response
         async def stream_and_save_logic():
@@ -129,7 +143,9 @@ async def chat_endpoint(
                     user_id=user_id,
                     db_session=db,
                     session_id=session_id,
-                    provider=ai_provider  # Use user's selected provider
+                    provider=ai_provider,  # Use user's selected provider
+                    override_openai_api_key=openai_key_override,
+                    override_gemini_api_key=gemini_key_override,
                 )
                 
                 # Stream the response

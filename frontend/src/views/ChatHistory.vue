@@ -113,7 +113,8 @@
                   ? 'bg-primary-600 text-white' 
                   : 'bg-gray-100 text-gray-900'"
               >
-                <div class="whitespace-pre-wrap">{{ message.content }}</div>
+                <div v-if="message.role === 'assistant'" class="whitespace-pre-wrap" v-html="linkify(message.content)"></div>
+                <div v-else class="whitespace-pre-wrap">{{ message.content }}</div>
                 <div class="text-xs mt-2 opacity-70">
                   {{ formatTime(message.timestamp) }}
                 </div>
@@ -133,6 +134,7 @@ import BaseLayout from '@/components/BaseLayout.vue'
 import BaseCard from '@/components/BaseCard.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import { apiService } from '@/services/api'
+import { linkify } from '@/utils/linkify'
 
 interface Session {
   id: number

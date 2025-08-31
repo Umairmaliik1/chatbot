@@ -56,6 +56,9 @@ class UserProfile(Base):
     # AI settings
     response_delay_seconds = Column(Integer, default=0)  # Response delay in seconds (0-40)
     ai_provider = Column(String, default='gemini')  # 'gemini' or 'openai'
+    # Encrypted per-user provider API keys (Fernet tokens)
+    openai_api_key_enc = Column(String, nullable=True)
+    gemini_api_key_enc = Column(String, nullable=True)
     
     # User customization
     custom_logo_url = Column(String, nullable=True)

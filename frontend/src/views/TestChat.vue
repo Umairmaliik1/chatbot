@@ -216,7 +216,12 @@
                       ? 'bg-indigo-600 text-white rounded-br-md'
                       : 'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-bl-md'"
                   >
-                    {{ message.content }}
+                    <template v-if="message.role === 'assistant'">
+                      <div class="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" v-html="linkify(message.content)"></div>
+                    </template>
+                    <template v-else>
+                      {{ message.content }}
+                    </template>
                   </div>
                   <div
                     class="mt-1 text-[11px] text-gray-500 dark:text-gray-400"
@@ -381,6 +386,7 @@ import BaseLayout from '@/components/BaseLayout.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseInput from '@/components/BaseInput.vue'
 import { chatService } from '@/services/chat'
+import { linkify } from '@/utils/linkify'
 
 interface Message {
   id: string

@@ -125,6 +125,89 @@
           </div>
           
           <div class="space-y-6 p-6">
+            <!-- AI Provider API Keys -->
+            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h4 class="text-sm font-medium text-gray-900 dark:text-white">AI Provider Keys</h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Store your own OpenAI and Gemini keys. Your keys are encrypted at rest.</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- OpenAI Key -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h5 class="text-sm font-medium text-gray-900 dark:text-white">OpenAI API Key</h5>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">Status: <span :class="providerKeysStatus.openai_configured ? 'text-success-600' : 'text-warning-600'">{{ providerKeysStatus.openai_configured ? `Configured (…${providerKeysStatus.openai_last4 || ''})` : 'Not Configured' }}</span></p>
+                    </div>
+                  </div>
+
+                  <BaseInput
+                    v-model="providerKeysForm.openai_api_key"
+                    type="password"
+                    label="OpenAI API Key"
+                    placeholder="sk-..."
+                  />
+
+                  <div class="flex gap-2 justify-end">
+                    <BaseButton
+                      variant="primary"
+                      size="sm"
+                      :loading="isUpdatingProviderKeys"
+                      @click="saveProviderKey('openai')"
+                    >
+                      Save Key
+                    </BaseButton>
+                    <BaseButton
+                      variant="danger"
+                      size="sm"
+                      :disabled="!providerKeysStatus.openai_configured"
+                      @click="deleteProviderKey('openai')"
+                    >
+                      Remove
+                    </BaseButton>
+                  </div>
+                </div>
+
+                <!-- Gemini Key -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h5 class="text-sm font-medium text-gray-900 dark:text-white">Gemini API Key</h5>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">Status: <span :class="providerKeysStatus.gemini_configured ? 'text-success-600' : 'text-warning-600'">{{ providerKeysStatus.gemini_configured ? `Configured (…${providerKeysStatus.gemini_last4 || ''})` : 'Not Configured' }}</span></p>
+                    </div>
+                  </div>
+
+                  <BaseInput
+                    v-model="providerKeysForm.gemini_api_key"
+                    type="password"
+                    label="Gemini API Key"
+                    placeholder="AIza..."
+                  />
+
+                  <div class="flex gap-2 justify-end">
+                    <BaseButton
+                      variant="primary"
+                      size="sm"
+                      :loading="isUpdatingProviderKeys"
+                      @click="saveProviderKey('gemini')"
+                    >
+                      Save Key
+                    </BaseButton>
+                    <BaseButton
+                      variant="danger"
+                      size="sm"
+                      :disabled="!providerKeysStatus.gemini_configured"
+                      @click="deleteProviderKey('gemini')"
+                    >
+                      Remove
+                    </BaseButton>
+                  </div>
+                </div>
+              </div>
+            </div>
             <!-- AI Provider Selection -->
             <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
               <div class="flex items-center justify-between mb-4">
@@ -480,6 +563,16 @@ const apiUsage = ref({
   tokens: 0
 })
 
+// Provider keys state
+const providerKeysStatus = ref<{ openai_configured: boolean; openai_last4?: string | null; gemini_configured: boolean; gemini_last4?: string | null }>({
+  openai_configured: false,
+  openai_last4: null,
+  gemini_configured: false,
+  gemini_last4: null,
+})
+const providerKeysForm = ref<{ openai_api_key?: string; gemini_api_key?: string }>({})
+const isUpdatingProviderKeys = ref(false)
+
 // Preferences
 // Dark mode functionality
 const darkMode = ref(false)
@@ -574,6 +667,50 @@ const updateProfile = async () => {
     showError('Failed to update profile', err.message)
   } finally {
     isUpdatingProfile.value = false
+  }
+}
+
+const loadProviderKeysStatus = async () => {
+  try {
+    const status = await apiService.get<{
+      openai_configured: boolean; openai_last4?: string | null;
+      gemini_configured: boolean; gemini_last4?: string | null;
+    }>('/provider-keys')
+    providerKeysStatus.value = status
+  } catch (err: any) {
+    // Non-fatal
+  }
+}
+
+const saveProviderKey = async (provider: 'openai' | 'gemini') => {
+  try {
+    isUpdatingProviderKeys.value = true
+    const payload: any = {}
+    if (provider === 'openai') {
+      payload.openai_api_key = providerKeysForm.value.openai_api_key || ''
+    } else {
+      payload.gemini_api_key = providerKeysForm.value.gemini_api_key || ''
+    }
+    const status = await apiService.post('/provider-keys', payload)
+    providerKeysStatus.value = status as any
+    // Clear plaintext after save
+    if (provider === 'openai') providerKeysForm.value.openai_api_key = ''
+    if (provider === 'gemini') providerKeysForm.value.gemini_api_key = ''
+    showSuccess(`${provider.toUpperCase()} key saved`)
+  } catch (err: any) {
+    showError('Failed to save key', err.message)
+  } finally {
+    isUpdatingProviderKeys.value = false
+  }
+}
+
+const deleteProviderKey = async (provider: 'openai' | 'gemini') => {
+  try {
+    await apiService.delete(`/provider-keys/${provider}`)
+    await loadProviderKeysStatus()
+    showSuccess(`${provider.toUpperCase()} key removed`)
+  } catch (err: any) {
+    showError('Failed to remove key', err.message)
   }
 }
 
@@ -813,5 +950,6 @@ onMounted(async () => {
   }
   
   loadSettings()
+  loadProviderKeysStatus()
 })
 </script>

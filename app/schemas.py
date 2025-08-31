@@ -44,6 +44,20 @@ class UserProfileUpdate(BaseModel):
     custom_favicon_url: Optional[str] = None
     custom_website_name: Optional[str] = None
 
+
+# --- Provider Keys Schemas ---
+
+class ProviderKeysIn(BaseModel):
+    openai_api_key: Optional[str] = None
+    gemini_api_key: Optional[str] = None
+
+
+class ProviderKeysStatusOut(BaseModel):
+    openai_configured: bool
+    openai_last4: Optional[str] = None
+    gemini_configured: bool
+    gemini_last4: Optional[str] = None
+
 # --- Instruction & FAQ Schemas ---
 
 class InstructionCreate(BaseModel):
@@ -78,4 +92,3 @@ class FAQResponse(BaseModel):
     
     class Config:
         from_attributes = True
-

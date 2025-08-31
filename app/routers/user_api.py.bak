@@ -5,8 +5,7 @@ import time
 
 from .. import models, auth, hashing
 from ..database import get_db
-from ..schemas import UserProfileUpdate, ProviderKeysIn, ProviderKeysStatusOut
-from ..crypto import encrypt, decrypt
+from ..schemas import UserProfileUpdate
 
 router = APIRouter(
     prefix="/api",
@@ -126,88 +125,3 @@ async def upload_favicon(
         }
     }
 
-
-# =============================
-# Provider API Keys Management
-# =============================
-
-@router.get("/provider-keys", response_model=ProviderKeysStatusOut)
-async def get_provider_keys_status(
-    db: Session = Depends(get_db),
-    user: models.User = Depends(auth.get_current_user_for_api)
-):
-    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
-    openai_token = profile.openai_api_key_enc if profile else None
-    gemini_token = profile.gemini_api_key_enc if profile else None
-
-    def last4(token: str | None) -> str | None:
-        if not token:
-            return None
-        plain = decrypt(token)
-        return plain[-4:] if plain and len(plain) >= 4 else None
-
-    return ProviderKeysStatusOut(
-        openai_configured=bool(openai_token),
-        openai_last4=last4(openai_token),
-        gemini_configured=bool(gemini_token),
-        gemini_last4=last4(gemini_token),
-    )
-
-
-@router.post("/provider-keys", response_model=ProviderKeysStatusOut)
-async def set_provider_keys(
-    payload: ProviderKeysIn,
-    db: Session = Depends(get_db),
-    user: models.User = Depends(auth.get_current_user_for_api)
-):
-    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
-    if not profile:
-        profile = models.UserProfile(user_id=user.id)
-        db.add(profile)
-        db.flush()
-
-    # Only update provided fields; allow clearing by sending empty strings
-    if payload.openai_api_key is not None:
-        profile.openai_api_key_enc = encrypt(payload.openai_api_key.strip()) if payload.openai_api_key.strip() else None
-
-    if payload.gemini_api_key is not None:
-        profile.gemini_api_key_enc = encrypt(payload.gemini_api_key.strip()) if payload.gemini_api_key.strip() else None
-
-    db.commit()
-    db.refresh(profile)
-
-    def last4(token: str | None) -> str | None:
-        if not token:
-            return None
-        plain = decrypt(token)
-        return plain[-4:] if plain and len(plain) >= 4 else None
-
-    return ProviderKeysStatusOut(
-        openai_configured=bool(profile.openai_api_key_enc),
-        openai_last4=last4(profile.openai_api_key_enc),
-        gemini_configured=bool(profile.gemini_api_key_enc),
-        gemini_last4=last4(profile.gemini_api_key_enc),
-    )
-
-
-@router.delete("/provider-keys/{provider}")
-async def delete_provider_key(
-    provider: str,
-    db: Session = Depends(get_db),
-    user: models.User = Depends(auth.get_current_user_for_api)
-):
-    provider = provider.lower()
-    if provider not in {"openai", "gemini"}:
-        raise HTTPException(status_code=400, detail="Provider must be 'openai' or 'gemini'")
-
-    profile = db.query(models.UserProfile).filter(models.UserProfile.user_id == user.id).first()
-    if not profile:
-        return {"message": "No profile found. Nothing to delete."}
-
-    if provider == "openai":
-        profile.openai_api_key_enc = None
-    else:
-        profile.gemini_api_key_enc = None
-
-    db.commit()
-    return {"message": f"{provider} key deleted."}

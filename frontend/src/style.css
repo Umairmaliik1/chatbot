@@ -647,3 +647,19 @@
   background-color: #dcfce7;
   color: #166534;
 }
+
+/* Ensure links are clickable and styled properly within prose containers */
+.prose a, .prose-sm a {
+  @apply text-blue-600 dark:text-blue-400 underline decoration-blue-600 dark:decoration-blue-400;
+  @apply hover:text-blue-800 dark:hover:text-blue-300 hover:decoration-blue-800 dark:hover:decoration-blue-300;
+  @apply transition-colors cursor-pointer break-words;
+}
+
+/* Override any conflicting prose styles for links */
+.prose a:visited, .prose-sm a:visited {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+.prose a:hover, .prose-sm a:hover {
+  @apply text-blue-800 dark:text-blue-300 underline decoration-blue-800 dark:decoration-blue-300;
+}

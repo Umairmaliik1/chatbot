@@ -50,13 +50,34 @@ class UnifiedAIClient:
             except Exception as e:
                 logging.error(f"Failed to initialize OpenAI client: {e}")
     
-    def _get_client_for_provider(self, provider: str):
-        """Get the appropriate client for the specified provider."""
+    def _get_client_for_provider(self, provider: str, override_key: Optional[str] = None):
+        """Get the appropriate client for the specified provider.
+
+        If `override_key` is provided, construct a temporary client using that key.
+        Otherwise, return the globally initialized client (env-backed).
+        """
         if provider == "openai":
+            if override_key:
+                return ChatOpenAI(
+                    model="gpt-3.5-turbo",
+                    openai_api_key=override_key,
+                    temperature=settings.temperature,
+                    max_tokens=settings.max_tokens,
+                    verbose=False,
+                )
             if not self.openai_client:
                 raise ValueError("OpenAI client not initialized. Please check OPENAI_API_KEY environment variable.")
             return self.openai_client
         elif provider == "gemini":
+            if override_key:
+                return ChatGoogleGenerativeAI(
+                    model="gemini-1.5-flash",
+                    google_api_key=override_key,
+                    temperature=settings.temperature,
+                    max_output_tokens=settings.max_tokens,
+                    convert_system_message_to_human=True,
+                    verbose=False,
+                )
             if not self.gemini_client:
                 raise ValueError("Gemini client not initialized. Please check GEMINI_API_KEY environment variable.")
             return self.gemini_client
@@ -85,14 +106,19 @@ class UnifiedAIClient:
         
         # Add system message (OpenAI supports it directly, Gemini converts to human)
         if system_prompt:
+            logging.info(f"✅ Preparing messages with system prompt for {provider}: {system_prompt[:100]}...")
             if provider == "openai":
                 messages.append(SystemMessage(content=system_prompt))
             else:  # Gemini
                 # For Gemini, we'll prepend the system message to the first user message
                 if history and history[0]["role"] == "user":
                     history[0]["content"] = f"{system_prompt}\n\nUser: {history[0]['content']}"
+                    logging.info(f"✅ Prepended system prompt to first user message for Gemini")
                 else:
                     messages.append(HumanMessage(content=system_prompt))
+                    logging.info(f"✅ Added system prompt as HumanMessage for Gemini")
+        else:
+            logging.warning(f"❌ No system prompt provided for {provider}")
         
         # Add conversation history
         for msg in history:
@@ -112,14 +138,21 @@ class UnifiedAIClient:
         user_id: Optional[int] = None,
         db_session=None,
         session_id: Optional[int] = None,
-        provider: str = "gemini"
+        provider: str = "gemini",
+        override_openai_api_key: Optional[str] = None,
+        override_gemini_api_key: Optional[str] = None,
     ) -> Iterator[str]:
         """
         Generate streaming response using the specified provider.
         """
         try:
-            # Get the appropriate client
-            client = self._get_client_for_provider(provider)
+            # Get the appropriate client (allow per-user overrides)
+            override = None
+            if provider == "openai":
+                override = override_openai_api_key
+            elif provider == "gemini":
+                override = override_gemini_api_key
+            client = self._get_client_for_provider(provider, override_key=override)
             
             # Update client parameters if provided
             if max_tokens:
